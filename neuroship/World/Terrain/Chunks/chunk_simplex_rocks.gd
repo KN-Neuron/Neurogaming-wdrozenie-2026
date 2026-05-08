@@ -4,7 +4,7 @@ extends Node2D
 
 @export var map_width: int = 16
 @export var map_height: int = 16
-@export var noise_seed: int = 12345
+@export var noise_seed: int = randi()
 @export var noise_frequency: float = 0.05
 
 var _noise: FastNoiseLite
