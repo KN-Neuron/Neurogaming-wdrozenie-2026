@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://b3mkk32uim6hu" path="res://World/Terrain/Chunks/chunk_island.tscn" id="2_t2bap"]
 [ext_resource type="PackedScene" uid="uid://b3ux5i8dc7blh" path="res://World/Terrain/Chunks/chunk_rocks.tscn" id="3_r4csa"]
 [ext_resource type="PackedScene" uid="uid://chhn7b3uqlun7" path="res://World/Terrain/Chunks/chunk_sea.tscn" id="4_hsgs1"]
+[ext_resource type="Script" uid="uid://sxcgp82q16f" path="res://World/Terrain/debug_camera.gd" id="6_r4csa"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ngk15"]
 texture = ExtResource("2_6loej")
@@ -37,3 +38,6 @@ chunk_scenes = Array[PackedScene]([ExtResource("2_t2bap"), ExtResource("3_r4csa"
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=420956171]
 tile_set = SubResource("TileSet_t2bap")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1682407626]
+script = ExtResource("6_r4csa")
