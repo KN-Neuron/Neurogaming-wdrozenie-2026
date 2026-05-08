@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://bdbfxj0c6qwwr"]
+
+[ext_resource type="Script" uid="uid://sk1lhw7ib2yv" path="res://World/Terrain/Chunks/chunk_simplex_rocks.gd" id="1_3wfdu"]
+[ext_resource type="Texture2D" uid="uid://3p1mxd1wydle" path="res://World/Terrain/temp_terrain_tileset.png" id="2_4qvje"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0cp3o"]
+texture = ExtResource("2_4qvje")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+8:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_mi2n1"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_0cp3o")
+
+[node name="ChunkSimplexRocks" type="Node2D" unique_id=2117819974 node_paths=PackedStringArray("terrain_tile_map_layer")]
+script = ExtResource("1_3wfdu")
+terrain_tile_map_layer = NodePath("TileMapLayer")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1590334695]
+tile_set = SubResource("TileSet_mi2n1")

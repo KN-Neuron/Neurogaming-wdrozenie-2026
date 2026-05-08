@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://bplgrp3pkafrj" path="res://World/Terrain/terrain_generator.gd" id="1_yh308"]
 [ext_resource type="Texture2D" uid="uid://3p1mxd1wydle" path="res://World/Terrain/temp_terrain_tileset.png" id="2_6loej"]
 [ext_resource type="PackedScene" uid="uid://b3mkk32uim6hu" path="res://World/Terrain/Chunks/chunk_island.tscn" id="2_t2bap"]
-[ext_resource type="PackedScene" uid="uid://b3ux5i8dc7blh" path="res://World/Terrain/Chunks/chunk_rocks.tscn" id="3_r4csa"]
 [ext_resource type="PackedScene" uid="uid://chhn7b3uqlun7" path="res://World/Terrain/Chunks/chunk_sea.tscn" id="4_hsgs1"]
+[ext_resource type="PackedScene" uid="uid://bdbfxj0c6qwwr" path="res://World/Terrain/Chunks/chunk_simplex_rocks.tscn" id="4_r4csa"]
 [ext_resource type="Script" uid="uid://sxcgp82q16f" path="res://World/Terrain/debug_camera.gd" id="6_r4csa"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ngk15"]
@@ -34,7 +34,7 @@ sources/0 = SubResource("TileSetAtlasSource_ngk15")
 
 [node name="TerrainGenerator" type="Node2D" unique_id=1720604078]
 script = ExtResource("1_yh308")
-chunk_scenes = Array[PackedScene]([ExtResource("2_t2bap"), ExtResource("3_r4csa"), ExtResource("4_hsgs1")])
+chunk_scenes = Array[PackedScene]([ExtResource("2_t2bap"), ExtResource("4_hsgs1"), ExtResource("4_r4csa")])
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=420956171]
 tile_set = SubResource("TileSet_t2bap")
