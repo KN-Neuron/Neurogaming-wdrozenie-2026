@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://bxbx753p44ymo"]
+
+[node name="TerrainGenerator" type="Node2D" unique_id=1720604078]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2098761342]
