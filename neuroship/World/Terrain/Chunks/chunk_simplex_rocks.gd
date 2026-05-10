@@ -36,12 +36,12 @@ func generate_terrain() -> void:
 			var noise_value: float = _noise.get_noise_2d(x, y) # [-1, 1]
 			var selected_tile: Vector2i
 
-			if noise_value < -0.2:
-				selected_tile = ROCK_TILE
-			elif noise_value >= -0.2 and noise_value < 0.1:
-				selected_tile = HARD_ROCK_TILE
-			else:
+			if noise_value < 0.5:
 				selected_tile = WATER_TILE
+			elif noise_value >= 0.5 and noise_value < 0.8:
+				selected_tile = ROCK_TILE
+			else:
+				selected_tile = HARD_ROCK_TILE
 
 
 			terrain_tile_map_layer.set_cell(Vector2i(x, y), SOURCE_ID, selected_tile)
