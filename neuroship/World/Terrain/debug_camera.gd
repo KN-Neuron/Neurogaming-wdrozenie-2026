@@ -1,6 +1,6 @@
 extends Camera2D
 
-@export var speed: float = 800.0 
+@export var speed: float = 2000.0 
 @export var zoom_speed: float = 2.0 
 
 func _process(delta: float) -> void:
