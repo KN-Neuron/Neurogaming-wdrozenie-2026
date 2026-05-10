@@ -24,7 +24,7 @@ func _ready() -> void:
 
 func generate_terrain() -> void:
 	if not terrain_tile_map_layer:
-		printerr("No TileMapLayer assigned for rock terrain. Cannot generate terrain.")
+		printerr("No TileMapLayer assigned for sea terrain. Cannot generate terrain.")
 		return
 
 	terrain_tile_map_layer.clear()
