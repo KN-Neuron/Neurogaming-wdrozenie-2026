@@ -6,23 +6,33 @@ extends Node2D
 @export var grid_width: int = 10
 @export var grid_height: int = 10
 
-@export var chunk_scenes: Array[PackedScene] = []
+@export var chunk_sea_scenes: Array[PackedScene] = []
+@export var chunk_island_scenes: Array[PackedScene] = []
+
+@export var _noise: FastNoiseLite
 
 func _ready() -> void:
+	_noise = FastNoiseLite.new()
+	_noise.seed = randi()
+	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	_noise.frequency = 0.1
+
 	generate_chunk_map()
 
 func generate_chunk_map() -> void:
-	if chunk_scenes.is_empty():
-		printerr("No chunk scenes provided. Cannot generate terrain.")
+	if chunk_sea_scenes.is_empty():
+		printerr("No sea chunk scenes provided. Cannot generate terrain.")
 		return
 		
 	for x in range(grid_width):
 		for y in range(grid_height):
+			var noise_value: float = _noise.get_noise_2d(x, y) # [-1, 1]
+			var chunk_instance: Node2D
 			
-			var random_chunk_scene: PackedScene = chunk_scenes.pick_random()
-			
-			var chunk_instance: Node2D = random_chunk_scene.instantiate()
+			if noise_value < 0.3:
+				chunk_instance = chunk_sea_scenes[randi() % chunk_sea_scenes.size()].instantiate() as Node2D
+			else:
+				chunk_instance = chunk_island_scenes[randi() % chunk_island_scenes.size()].instantiate() as Node2D			
 			
 			chunk_instance.position = Vector2(x, y) * chunk_size_pixels
-			
 			add_child(chunk_instance)

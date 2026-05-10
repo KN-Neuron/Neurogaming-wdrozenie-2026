@@ -43,5 +43,4 @@ func generate_terrain() -> void:
 			else:
 				selected_tile = HARD_ROCK_TILE
 
-
 			terrain_tile_map_layer.set_cell(Vector2i(x, y), SOURCE_ID, selected_tile)
