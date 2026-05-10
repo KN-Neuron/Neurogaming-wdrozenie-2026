@@ -3,8 +3,8 @@ extends Node2D
 @export var chunk_size_pixels: Vector2 = Vector2(512, 512)
 
 # number of chunks in x and y direction
-@export var grid_width: int = 5
-@export var grid_height: int = 5
+@export var grid_width: int = 10
+@export var grid_height: int = 10
 
 @export var chunk_scenes: Array[PackedScene] = []
 
