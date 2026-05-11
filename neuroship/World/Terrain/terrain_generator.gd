@@ -36,10 +36,10 @@ func generate_chunk_map() -> void:
 			
 			var chunk_instance: Node2D
 			
-			if macro_noise < 0.0:
+			if macro_noise < 0.25:
 				chunk_instance = chunk_sea_scenes.pick_random().instantiate() as Node2D
 			else:
-				if macro_noise < 0.3 and not chunk_island_scenes.is_empty():
+				if macro_noise < 0.35 and not chunk_island_scenes.is_empty():
 					chunk_instance = chunk_island_scenes.pick_random().instantiate() as Node2D
 				elif not chunk_rock_scenes.is_empty():
 					chunk_instance = chunk_rock_scenes.pick_random().instantiate() as Node2D
