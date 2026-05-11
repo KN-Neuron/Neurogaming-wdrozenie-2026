@@ -34,8 +34,9 @@ sources/0 = SubResource("TileSetAtlasSource_ngk15")
 
 [node name="TerrainGenerator" type="Node2D" unique_id=1720604078]
 script = ExtResource("1_yh308")
-chunk_sea_scenes = Array[PackedScene]([ExtResource("2_r4csa"), ExtResource("4_r4csa")])
+chunk_sea_scenes = Array[PackedScene]([ExtResource("2_r4csa")])
 chunk_island_scenes = Array[PackedScene]([ExtResource("4_hsgs1")])
+chunk_rock_scenes = Array[PackedScene]([ExtResource("4_r4csa")])
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=420956171]
 tile_set = SubResource("TileSet_t2bap")
