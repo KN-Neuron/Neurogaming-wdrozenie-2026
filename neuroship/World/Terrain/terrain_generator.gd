@@ -1,7 +1,13 @@
 extends Node2D
 
+@export_group("Debug")
 @export var debug_mode: bool = false
 
+@export_group("Structures")
+@export var start_port_scene: PackedScene
+@export var end_port_scene: PackedScene
+
+@export_group("Path")
 @export var start_pos_tiles: Vector2 = Vector2(10, 10)
 @export var end_pos_tiles: Vector2 = Vector2(300, 300)
 @export var path_width_tiles: float = 15.0
@@ -11,18 +17,18 @@ var _baked_river_path: PackedVector2Array
 var _river_bounds: Rect2
 var _segment_bounds: Array[Rect2]
 
+@export_group("Chunk Generation")
 @export var chunk_size_pixels: Vector2 = Vector2(512, 512)
-
 @export var grid_width: int = 50
 @export var grid_height: int = 50
-
 @export var tiles_per_chunk: int = 16
 
-@export var biomes: Array[BiomeData] = []
+@export_group("Biomes")
+@export var biomes: Array[BiomeData]
 
+@export_group("World Generation")
 @export var use_random_seed: bool = true
 @export var world_seed: int = 0
-
 @export var noise_frequency: float = 0.05
 
 var _noise: FastNoiseLite
@@ -46,9 +52,11 @@ func _ready() -> void:
 	
 	generate_chunk_map()
 
+	_spawn_structures()
+
 	if debug_mode:
-		_create_debug_marker(start_pos_tiles, "Start", Color.GREEN)
-		_create_debug_marker(end_pos_tiles, "End", Color.RED)
+		# _create_debug_marker(start_pos_tiles, "Start", Color.GREEN)
+		# _create_debug_marker(end_pos_tiles, "End", Color.RED)
 
 		var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
 		$Camera2D.position = start_pos_tiles * tile_size
@@ -178,3 +186,16 @@ func _create_debug_marker(tile_pos: Vector2, marker_text: String, marker_color: 
 	marker.add_child(label)
 
 	add_child(marker)
+
+func _spawn_structures() -> void:
+	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
+	
+	if start_port_scene:
+		var start_port = start_port_scene.instantiate() as Node2D
+		start_port.position = start_pos_tiles * tile_size
+		add_child(start_port)
+		
+	if end_port_scene:
+		var end_port = end_port_scene.instantiate() as Node2D
+		end_port.position = end_pos_tiles * tile_size
+		add_child(end_port)
