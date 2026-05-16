@@ -1,5 +1,7 @@
 extends Node2D
 
+@export var debug_mode: bool = false
+
 @export var chunk_size_pixels: Vector2 = Vector2(512, 512)
 
 @export var grid_width: int = 30
@@ -15,6 +17,10 @@ extends Node2D
 var _noise: FastNoiseLite
 
 func _ready() -> void:
+	if not debug_mode:
+		$Camera2D.queue_free()
+		set_process(false)
+		
 	_noise = FastNoiseLite.new()
 	_noise.seed = world_seed
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
