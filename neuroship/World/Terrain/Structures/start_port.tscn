@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dym5t4pdl3u6p"]
+
+[ext_resource type="Texture2D" uid="uid://de7gff3w1anh6" path="res://World/Terrain/Structures/start_port.png" id="1_snr7q"]
+
+[node name="StartPort" type="Node2D" unique_id=1489763938]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=113451044]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("1_snr7q")
