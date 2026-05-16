@@ -6,7 +6,6 @@
 [resource]
 script = ExtResource("1_kbyhh")
 biome_name = "Island"
-min_noise = 0.35
-max_noise = 0.45
+upper_threshold = 0.45
 chunk_scenes = Array[PackedScene]([ExtResource("1_osw2j")])
 metadata/_custom_type_script = "uid://cjs1ldj1eg60d"

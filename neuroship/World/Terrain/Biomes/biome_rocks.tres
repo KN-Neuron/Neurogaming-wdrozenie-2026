@@ -6,6 +6,5 @@
 [resource]
 script = ExtResource("1_jr33x")
 biome_name = "Rocks"
-min_noise = 0.45
 chunk_scenes = Array[PackedScene]([ExtResource("1_wfr8k")])
 metadata/_custom_type_script = "uid://cjs1ldj1eg60d"

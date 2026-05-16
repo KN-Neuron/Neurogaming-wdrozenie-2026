@@ -50,6 +50,8 @@ func _ready() -> void:
 
 	_generate_river_curve()
 	
+	biomes.sort_custom(func(a, b): return a.upper_threshold < b.upper_threshold)
+
 	generate_chunk_map()
 
 	_spawn_structures()
@@ -73,9 +75,9 @@ func generate_chunk_map() -> void:
 			var macro_noise: float = _get_world_noise(center_tile_x, center_tile_y)
 			
 			var chunk_instance: Node2D = null
-			
+						
 			for biome in biomes:
-				if macro_noise >= biome.min_noise and macro_noise < biome.max_noise:
+				if macro_noise <= biome.upper_threshold:
 					if not biome.chunk_scenes.is_empty():
 						chunk_instance = biome.chunk_scenes.pick_random().instantiate() as Node2D
 					break
