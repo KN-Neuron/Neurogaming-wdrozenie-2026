@@ -68,14 +68,24 @@ func generate_chunk_map() -> void:
 		printerr("No biomes provided. Cannot generate terrain.")
 		return
 	
+	var land_cap_radius = path_width_tiles * 1.5
+	
 	for x in range(grid_width):
 		for y in range(grid_height):
 			var center_tile_x = (x * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
 			var center_tile_y = (y * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
+			
+			var chunk_center_tiles = Vector2(center_tile_x, center_tile_y)
+			var dist_to_start = chunk_center_tiles.distance_to(start_pos_tiles)
+			var dist_to_end = chunk_center_tiles.distance_to(end_pos_tiles)
+			
 			var macro_noise: float = _get_world_noise(center_tile_x, center_tile_y)
 			
+			if dist_to_start < (land_cap_radius + tiles_per_chunk) or dist_to_end < (land_cap_radius + tiles_per_chunk):
+				macro_noise = 0.4
+			
 			var chunk_instance: Node2D = null
-						
+			
 			for biome in biomes:
 				if macro_noise <= biome.upper_threshold:
 					if not biome.chunk_scenes.is_empty():
