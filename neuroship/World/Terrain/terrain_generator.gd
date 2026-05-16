@@ -5,15 +5,20 @@ extends Node2D
 @export var grid_width: int = 30
 @export var grid_height: int = 30
 
+@export var tiles_per_chunk: int = 16
+
 @export var biomes: Array[BiomeData] = []
+
+@export var world_seed: int = randi()
+@export var noise_frequency: float = 0.05
 
 var _noise: FastNoiseLite
 
 func _ready() -> void:
 	_noise = FastNoiseLite.new()
-	_noise.seed = randi()
+	_noise.seed = world_seed
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
-	_noise.frequency = 0.05
+	_noise.frequency = noise_frequency
 
 	generate_chunk_map()
 
@@ -24,8 +29,8 @@ func generate_chunk_map() -> void:
 	
 	for x in range(grid_width):
 		for y in range(grid_height):
-			var center_tile_x = (x * 16) + 8
-			var center_tile_y = (y * 16) + 8
+			var center_tile_x = (x * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
+			var center_tile_y = (y * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
 			var macro_noise: float = _noise.get_noise_2d(center_tile_x, center_tile_y)
 			
 			var chunk_instance: Node2D = null

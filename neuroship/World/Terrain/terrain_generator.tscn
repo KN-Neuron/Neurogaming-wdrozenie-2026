@@ -1,44 +1,15 @@
 [gd_scene format=3 uid="uid://bxbx753p44ymo"]
 
 [ext_resource type="Script" uid="uid://bplgrp3pkafrj" path="res://World/Terrain/terrain_generator.gd" id="1_yh308"]
-[ext_resource type="Texture2D" uid="uid://3p1mxd1wydle" path="res://World/Terrain/temp_terrain_tileset.png" id="2_6loej"]
 [ext_resource type="Script" uid="uid://cjs1ldj1eg60d" path="res://World/Terrain/biome_data.gd" id="2_hsgs1"]
 [ext_resource type="Resource" uid="uid://bnixigvx40wbn" path="res://World/Terrain/Biomes/biome_sea.tres" id="3_rmhb2"]
 [ext_resource type="Resource" uid="uid://dy0drbris03os" path="res://World/Terrain/Biomes/biome_island.tres" id="4_svws0"]
 [ext_resource type="Resource" uid="uid://xrhcncu8q1tx" path="res://World/Terrain/Biomes/biome_rocks.tres" id="5_m31hp"]
 [ext_resource type="Script" uid="uid://sxcgp82q16f" path="res://World/Terrain/debug_camera.gd" id="6_r4csa"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ngk15"]
-texture = ExtResource("2_6loej")
-texture_region_size = Vector2i(32, 32)
-4:0/0 = 0
-5:0/0 = 0
-6:0/0 = 0
-7:0/0 = 0
-8:0/0 = 0
-8:1/0 = 0
-7:1/0 = 0
-6:1/0 = 0
-5:1/0 = 0
-4:1/0 = 0
-3:1/0 = 0
-2:1/0 = 0
-1:1/0 = 0
-0:1/0 = 0
-2:0/0 = 0
-3:0/0 = 0
-1:0/0 = 0
-0:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_t2bap"]
-sources/0 = SubResource("TileSetAtlasSource_ngk15")
-
 [node name="TerrainGenerator" type="Node2D" unique_id=1720604078]
 script = ExtResource("1_yh308")
 biomes = Array[ExtResource("2_hsgs1")]([ExtResource("3_rmhb2"), ExtResource("4_svws0"), ExtResource("5_m31hp")])
-
-[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=420956171]
-tile_set = SubResource("TileSet_t2bap")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1682407626]
 script = ExtResource("6_r4csa")
