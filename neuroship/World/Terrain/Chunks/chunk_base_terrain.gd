@@ -7,7 +7,7 @@ extends Node2D
 
 const SOURCE_ID := 0
 
-func generate_terrain_from_noise(global_noise: FastNoiseLite, chunk_grid_pos: Vector2i) -> void:
+func generate_terrain_from_noise(noise_function: Callable, chunk_grid_pos: Vector2i) -> void:
     if not terrain_tile_map_layer:
         printerr("No TileMapLayer assigned. Cannot generate terrain.")
         return
@@ -19,7 +19,7 @@ func generate_terrain_from_noise(global_noise: FastNoiseLite, chunk_grid_pos: Ve
             var global_x = (chunk_grid_pos.x * chunk_width) + x
             var global_y = (chunk_grid_pos.y * chunk_height) + y
 
-            var noise_value: float = global_noise.get_noise_2d(global_x, global_y)
+            var noise_value: float = noise_function.call(global_x, global_y)
             
             var selected_tile: Vector2i = _get_tile_from_noise(noise_value)
             
