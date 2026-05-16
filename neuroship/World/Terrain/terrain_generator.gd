@@ -2,8 +2,8 @@ extends Node2D
 
 @export var chunk_size_pixels: Vector2 = Vector2(512, 512)
 
-@export var grid_width: int = 10
-@export var grid_height: int = 10
+@export var grid_width: int = 30
+@export var grid_height: int = 30
 
 @export var chunk_sea_scenes: Array[PackedScene] = []
 @export var chunk_island_scenes: Array[PackedScene] = []
@@ -36,10 +36,10 @@ func generate_chunk_map() -> void:
 			
 			var chunk_instance: Node2D
 			
-			if macro_noise < 0.25:
+			if macro_noise < 0.35:
 				chunk_instance = chunk_sea_scenes.pick_random().instantiate() as Node2D
 			else:
-				if macro_noise < 0.35 and not chunk_island_scenes.is_empty():
+				if macro_noise < 0.45 and not chunk_island_scenes.is_empty():
 					chunk_instance = chunk_island_scenes.pick_random().instantiate() as Node2D
 				elif not chunk_rock_scenes.is_empty():
 					chunk_instance = chunk_rock_scenes.pick_random().instantiate() as Node2D
