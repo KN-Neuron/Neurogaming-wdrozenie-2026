@@ -21,7 +21,6 @@ var _noise: FastNoiseLite
 func _ready() -> void:
 	if not debug_mode:
 		$Camera2D.queue_free()
-		set_process(false)
 
 	if use_random_seed:
 		randomize()
