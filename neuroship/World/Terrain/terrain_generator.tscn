@@ -11,8 +11,6 @@
 script = ExtResource("1_yh308")
 debug_mode = true
 biomes = Array[ExtResource("2_hsgs1")]([ExtResource("3_rmhb2"), ExtResource("4_svws0"), ExtResource("5_m31hp")])
-use_random_seed = false
-world_seed = 697412412
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1682407626]
 script = ExtResource("6_r4csa")
