@@ -9,6 +9,7 @@ extends Node2D
 
 var _baked_river_path: PackedVector2Array
 var _river_bounds: Rect2
+var _segment_bounds: Array[Rect2]
 
 @export var chunk_size_pixels: Vector2 = Vector2(512, 512)
 
@@ -83,24 +84,31 @@ func generate_chunk_map() -> void:
 			add_child(chunk_instance)
 
 func _get_world_noise(global_x: float, global_y: float) -> float:
-	var base_noise: float = _noise.get_noise_2d(global_x, global_y)
 	var current_point = Vector2(global_x, global_y)
 	
 	if not _river_bounds.has_point(current_point):
-		return base_noise
+		return _noise.get_noise_2d(global_x, global_y)
 	
-	var min_distance = 999999.0
+	var min_distance_sq = 999999.0
+	var path_width_sq = path_width_tiles * path_width_tiles
+	var is_near_any_segment = false
 	
-	for i in range(_baked_river_path.size() - 1):
-		var p1 = _baked_river_path[i]
-		var p2 = _baked_river_path[i+1]
-		var closest_pt = Geometry2D.get_closest_point_to_segment(current_point, p1, p2)
-		var dist = current_point.distance_to(closest_pt)
-		if dist < min_distance:
-			min_distance = dist
+	for i in range(_segment_bounds.size()):
+		if _segment_bounds[i].has_point(current_point):
+			is_near_any_segment = true
+			var p1 = _baked_river_path[i]
+			var p2 = _baked_river_path[i+1]
+			var closest_pt = Geometry2D.get_closest_point_to_segment(current_point, p1, p2)
 			
-	if min_distance < path_width_tiles:
-		var mask_strength = min_distance / path_width_tiles 
+			var dist_sq = current_point.distance_squared_to(closest_pt)
+			if dist_sq < min_distance_sq:
+				min_distance_sq = dist_sq
+				
+	var base_noise: float = _noise.get_noise_2d(global_x, global_y)
+	
+	if is_near_any_segment and min_distance_sq < path_width_sq:
+		var actual_distance = sqrt(min_distance_sq)
+		var mask_strength = actual_distance / path_width_tiles 
 		var carved_noise = lerp(-1.0, base_noise, mask_strength) 
 		return min(base_noise, carved_noise)
 		
@@ -137,9 +145,17 @@ func _generate_river_curve() -> void:
 	_baked_river_path = curve.get_baked_points()
 	
 	_river_bounds = Rect2(start_pos_tiles, Vector2.ZERO)
-	for p in _baked_river_path:
+	_segment_bounds.clear()
+	
+	for i in range(_baked_river_path.size()):
+		var p = _baked_river_path[i]
 		_river_bounds = _river_bounds.expand(p)
-
+		
+		if i < _baked_river_path.size() - 1:
+			var p_next = _baked_river_path[i+1]
+			var seg_rect = Rect2(p, Vector2.ZERO).expand(p_next)
+			_segment_bounds.append(seg_rect.grow(path_width_tiles + 2.0))
+			
 	_river_bounds = _river_bounds.grow(path_width_tiles + 2.0)
 
 func _create_debug_marker(tile_pos: Vector2, marker_text: String, marker_color: Color) -> void:
