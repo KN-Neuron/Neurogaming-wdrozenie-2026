@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://7tq5v3c2d356"]
+
+[ext_resource type="PackedScene" uid="uid://bxbx753p44ymo" path="res://World/Terrain/TerrainGenerator.tscn" id="1_glv2v"]
+
+[node name="Main" type="Node2D" unique_id=1799160326]
+
+[node name="TerrainGenerator" parent="." unique_id=1720604078 instance=ExtResource("1_glv2v")]
