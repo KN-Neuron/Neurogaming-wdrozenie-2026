@@ -3,8 +3,12 @@ extends Node2D
 @export var debug_mode: bool = false
 
 @export var start_pos_tiles: Vector2 = Vector2(10, 10)
-@export var end_pos_tiles: Vector2 = Vector2(150, 200)
+@export var end_pos_tiles: Vector2 = Vector2(300, 300)
 @export var path_width_tiles: float = 15.0
+@export var max_path_deviation: float = 80.0 
+
+var _baked_river_path: PackedVector2Array
+var _river_bounds: Rect2
 
 @export var chunk_size_pixels: Vector2 = Vector2(512, 512)
 
@@ -37,6 +41,8 @@ func _ready() -> void:
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	_noise.frequency = noise_frequency
 
+	_generate_river_curve()
+	
 	generate_chunk_map()
 
 	if debug_mode:
@@ -76,20 +82,65 @@ func generate_chunk_map() -> void:
 				
 			add_child(chunk_instance)
 
-func _get_world_noise(global_x: int, global_y: int) -> float:
+func _get_world_noise(global_x: float, global_y: float) -> float:
 	var base_noise: float = _noise.get_noise_2d(global_x, global_y)
-
 	var current_point = Vector2(global_x, global_y)
-	var closest_path_point = Geometry2D.get_closest_point_to_segment(current_point, start_pos_tiles, end_pos_tiles)
-	var distance_to_path = current_point.distance_to(closest_path_point)
-
-	if distance_to_path < path_width_tiles:
-		var mask_strength = distance_to_path / path_width_tiles
-		var carved_noise = lerp(-1.0, base_noise, mask_strength)
-
-		return min(carved_noise, base_noise)
-
+	
+	if not _river_bounds.has_point(current_point):
+		return base_noise
+	
+	var min_distance = 999999.0
+	
+	for i in range(_baked_river_path.size() - 1):
+		var p1 = _baked_river_path[i]
+		var p2 = _baked_river_path[i+1]
+		var closest_pt = Geometry2D.get_closest_point_to_segment(current_point, p1, p2)
+		var dist = current_point.distance_to(closest_pt)
+		if dist < min_distance:
+			min_distance = dist
+			
+	if min_distance < path_width_tiles:
+		var mask_strength = min_distance / path_width_tiles 
+		var carved_noise = lerp(-1.0, base_noise, mask_strength) 
+		return min(base_noise, carved_noise)
+		
 	return base_noise
+
+func _generate_river_curve() -> void:
+	var curve = Curve2D.new()
+	
+	var path_vector = end_pos_tiles - start_pos_tiles
+	var path_length = path_vector.length()
+	var path_dir = path_vector.normalized()
+	var path_normal = Vector2(-path_dir.y, path_dir.x)
+	
+	var handle_len = path_length * 0.25 
+	
+	var offset_one = randf_range(max_path_deviation * 0.5, max_path_deviation)
+	if randi() % 2 == 0: 
+		offset_one = -offset_one
+	
+	var offset_two = randf_range(max_path_deviation * 0.5, max_path_deviation)
+	if offset_one > 0: 
+		offset_two = -offset_two
+	
+	curve.add_point(start_pos_tiles)
+	var point_one = start_pos_tiles + (path_vector * 0.33)
+	curve.add_point(point_one + (path_normal * offset_one), -path_dir * handle_len, path_dir * handle_len)
+	
+	var point_two = start_pos_tiles + (path_vector * 0.66)
+	curve.add_point(point_two + (path_normal * offset_two), -path_dir * handle_len, path_dir * handle_len)
+	
+	curve.add_point(end_pos_tiles)
+	
+	curve.bake_interval = 20.0 
+	_baked_river_path = curve.get_baked_points()
+	
+	_river_bounds = Rect2(start_pos_tiles, Vector2.ZERO)
+	for p in _baked_river_path:
+		_river_bounds = _river_bounds.expand(p)
+
+	_river_bounds = _river_bounds.grow(path_width_tiles + 2.0)
 
 func _create_debug_marker(tile_pos: Vector2, marker_text: String, marker_color: Color) -> void:
 	var marker = Node2D.new()
