@@ -97,6 +97,33 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 	if not _river_bounds.has_point(current_point):
 		return _noise.get_noise_2d(global_x, global_y)
 	
+
+	var total_path_vector = end_pos_tiles - start_pos_tiles
+	var main_path_dir = total_path_vector.normalized()
+	
+	var vector_from_start = current_point - start_pos_tiles
+	var is_behind_start = vector_from_start.dot(main_path_dir) < 0.0
+	
+	var vector_from_end = current_point - end_pos_tiles
+	var is_past_end = vector_from_end.dot(main_path_dir) > 0.0
+	
+	var land_cap_radius = path_width_tiles * 1.5
+	
+	var base_noise = _noise.get_noise_2d(global_x, global_y)
+
+	if is_behind_start and vector_from_start.length() < land_cap_radius:
+		var dist = vector_from_start.length()
+		var factor = 1.0 - (dist / land_cap_radius)
+		return lerp(base_noise, 0.5, factor)
+		
+	if is_past_end and vector_from_end.length() < land_cap_radius:
+		var dist = vector_from_end.length()
+		var factor = 1.0 - (dist / land_cap_radius)
+		return lerp(base_noise, 0.5, factor)
+		
+	if is_behind_start or is_past_end:
+		return _noise.get_noise_2d(global_x, global_y)
+		
 	var min_distance_sq = 999999.0
 	var path_width_sq = path_width_tiles * path_width_tiles
 	var is_near_any_segment = false
@@ -111,8 +138,6 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 			var dist_sq = current_point.distance_squared_to(closest_pt)
 			if dist_sq < min_distance_sq:
 				min_distance_sq = dist_sq
-				
-	var base_noise: float = _noise.get_noise_2d(global_x, global_y)
 	
 	if is_near_any_segment and min_distance_sq < path_width_sq:
 		var actual_distance = sqrt(min_distance_sq)
