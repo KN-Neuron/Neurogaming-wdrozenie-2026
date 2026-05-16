@@ -11,7 +11,9 @@ extends Node2D
 
 @export var biomes: Array[BiomeData] = []
 
-@export var world_seed: int = randi()
+@export var use_random_seed: bool = true
+@export var world_seed: int = 0
+
 @export var noise_frequency: float = 0.05
 
 var _noise: FastNoiseLite
@@ -20,7 +22,13 @@ func _ready() -> void:
 	if not debug_mode:
 		$Camera2D.queue_free()
 		set_process(false)
-		
+
+	if use_random_seed:
+		randomize()
+		world_seed = randi()
+	
+	print("Generated world seed: ", world_seed)
+
 	_noise = FastNoiseLite.new()
 	_noise.seed = world_seed
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
