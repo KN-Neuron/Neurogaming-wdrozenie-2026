@@ -43,6 +43,9 @@ func _ready() -> void:
 		_create_debug_marker(start_pos_tiles, "Start", Color.GREEN)
 		_create_debug_marker(end_pos_tiles, "End", Color.RED)
 
+		var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
+		$Camera2D.position = start_pos_tiles * tile_size
+
 func generate_chunk_map() -> void:
 	if biomes.is_empty():
 		printerr("No biomes provided. Cannot generate terrain.")
