@@ -5,9 +5,7 @@ extends Node2D
 @export var grid_width: int = 30
 @export var grid_height: int = 30
 
-@export var chunk_sea_scenes: Array[PackedScene] = []
-@export var chunk_island_scenes: Array[PackedScene] = []
-@export var chunk_rock_scenes: Array[PackedScene] = []
+@export var biomes: Array[BiomeData] = []
 
 var _noise: FastNoiseLite
 
@@ -20,31 +18,27 @@ func _ready() -> void:
 	generate_chunk_map()
 
 func generate_chunk_map() -> void:
-	if chunk_sea_scenes.is_empty():
-		printerr("No sea chunk scenes provided. Cannot generate terrain.")
+	if biomes.is_empty():
+		printerr("No biomes provided. Cannot generate terrain.")
 		return
-	if chunk_island_scenes.is_empty():
-		printerr("No island chunk scenes provided. ")
-	if chunk_rock_scenes.is_empty():
-		printerr("No rock chunk scenes provided. ")
-		
+	
 	for x in range(grid_width):
 		for y in range(grid_height):
 			var center_tile_x = (x * 16) + 8
 			var center_tile_y = (y * 16) + 8
 			var macro_noise: float = _noise.get_noise_2d(center_tile_x, center_tile_y)
 			
-			var chunk_instance: Node2D
+			var chunk_instance: Node2D = null
 			
-			if macro_noise < 0.35:
-				chunk_instance = chunk_sea_scenes.pick_random().instantiate() as Node2D
-			else:
-				if macro_noise < 0.45 and not chunk_island_scenes.is_empty():
-					chunk_instance = chunk_island_scenes.pick_random().instantiate() as Node2D
-				elif not chunk_rock_scenes.is_empty():
-					chunk_instance = chunk_rock_scenes.pick_random().instantiate() as Node2D
-				else:
-					chunk_instance = chunk_sea_scenes.pick_random().instantiate() as Node2D
+			for biome in biomes:
+				if macro_noise >= biome.min_noise and macro_noise < biome.max_noise:
+					if not biome.chunk_scenes.is_empty():
+						chunk_instance = biome.chunk_scenes.pick_random().instantiate() as Node2D
+					break
+			
+			if not chunk_instance:
+				print("Warning: No biome found for noise value ", macro_noise, " at chunk (", x, ", ", y, "). Using default biome.")
+				chunk_instance = biomes[0].chunk_scenes.pick_random().instantiate() as Node2D
 			
 			chunk_instance.position = Vector2(x, y) * chunk_size_pixels
 			
