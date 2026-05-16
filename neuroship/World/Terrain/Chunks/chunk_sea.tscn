@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://g6xwgg080cuf"]
 
 [ext_resource type="Texture2D" uid="uid://3p1mxd1wydle" path="res://World/Terrain/temp_terrain_tileset.png" id="1_cki26"]
-[ext_resource type="Script" uid="uid://bjj28yinmott5" path="res://World/Terrain/Chunks/chunk_simplex_sea.gd" id="1_y6xlr"]
+[ext_resource type="Script" uid="uid://bjj28yinmott5" path="res://World/Terrain/Chunks/chunk_sea.gd" id="1_y6xlr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_y6xlr"]
 texture = ExtResource("1_cki26")

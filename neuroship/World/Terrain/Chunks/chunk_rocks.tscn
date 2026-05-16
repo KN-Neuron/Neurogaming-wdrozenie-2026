@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://bdbfxj0c6qwwr"]
 
-[ext_resource type="Script" uid="uid://sk1lhw7ib2yv" path="res://World/Terrain/Chunks/chunk_simplex_rocks.gd" id="1_3wfdu"]
+[ext_resource type="Script" uid="uid://sk1lhw7ib2yv" path="res://World/Terrain/Chunks/chunk_rocks.gd" id="1_3wfdu"]
 [ext_resource type="Texture2D" uid="uid://3p1mxd1wydle" path="res://World/Terrain/temp_terrain_tileset.png" id="2_4qvje"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3wfdu"]
