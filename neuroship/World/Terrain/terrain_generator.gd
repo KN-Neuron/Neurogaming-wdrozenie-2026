@@ -99,7 +99,6 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 	if not _river_bounds.has_point(current_point):
 		return _noise.get_noise_2d(global_x, global_y)
 	
-
 	var total_path_vector = end_pos_tiles - start_pos_tiles
 	var main_path_dir = total_path_vector.normalized()
 	
