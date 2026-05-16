@@ -30,6 +30,7 @@ var _segment_bounds: Array[Rect2]
 @export var use_random_seed: bool = true
 @export var world_seed: int = 0
 @export var noise_frequency: float = 0.05
+@export var port_ground_noise_target: float = 0.4
 
 var _noise: FastNoiseLite
 
@@ -82,7 +83,7 @@ func generate_chunk_map() -> void:
 			var macro_noise: float = _get_world_noise(center_tile_x, center_tile_y)
 			
 			if dist_to_start < (land_cap_radius + tiles_per_chunk) or dist_to_end < (land_cap_radius + tiles_per_chunk):
-				macro_noise = 0.4
+				macro_noise = port_ground_noise_target
 			
 			var chunk_instance: Node2D = null
 			
@@ -125,12 +126,12 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 	if is_behind_start and vector_from_start.length() < land_cap_radius:
 		var dist = vector_from_start.length()
 		var factor = 1.0 - (dist / land_cap_radius)
-		return lerp(base_noise, 0.5, factor)
+		return lerp(base_noise, port_ground_noise_target, factor)
 		
 	if is_past_end and vector_from_end.length() < land_cap_radius:
 		var dist = vector_from_end.length()
 		var factor = 1.0 - (dist / land_cap_radius)
-		return lerp(base_noise, 0.5, factor)
+		return lerp(base_noise, port_ground_noise_target, factor)
 		
 	if is_behind_start or is_past_end:
 		return _noise.get_noise_2d(global_x, global_y)
