@@ -12,7 +12,7 @@ extends Node2D
 
 @export_group("Path")
 @export var randomize_path: bool = true
-@export var min_path_length_tiles: float = 150.0
+@export var min_path_length_tiles: float = 400.0
 @export var path_margin_tiles: float = 30.0
 @export var path_length_multiplier_for_deviation: float = 0.25
 @export var curve_bake_interval: float = 20.0
