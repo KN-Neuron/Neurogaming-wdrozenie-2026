@@ -9,6 +9,7 @@ extends Node2D
 @export var port_ground_noise_target: float = 0.4
 @export var port_land_cap_multiplier: float = 1.5
 @export var additional_structures: Array[PlacedStructure] = []
+@export var max_valid_structure_spawn_attempts: int = 50
 
 @export_group("Path")
 @export var randomize_path: bool = true
@@ -67,8 +68,8 @@ func _ready() -> void:
 	if randomize_path:
 		_randomize_ports()
 
-	_initialize_structures()
 	_generate_river_curve()
+	_initialize_structures()
 	
 	# Sort biomes for waterfall logic
 	biomes.sort_custom(func(a, b): return a.upper_threshold < b.upper_threshold)
@@ -128,13 +129,30 @@ func _initialize_structures() -> void:
 			var max_y = (grid_height * tiles_per_chunk) - path_margin_tiles
 			
 			for i in range(spawn_count):
-				var random_struct = struct.duplicate() 
+				var valid_spot_found = false
+				var attempts = 0
+				var random_x: float = 0.0
+				var random_y: float = 0.0
 				
-				var random_x = randf_range(min_coord, max_x)
-				var random_y = randf_range(min_coord, max_y)
-				
-				random_struct.tile_position = Vector2(random_x, random_y)
-				_all_structures.append(random_struct)
+				while not valid_spot_found and attempts < max_valid_structure_spawn_attempts:
+					random_x = randf_range(min_coord, max_x)
+					random_y = randf_range(min_coord, max_y)
+					
+					if struct.restrict_spawn_by_noise:
+						var current_terrain_noise = _get_world_noise(random_x, random_y)
+						if current_terrain_noise >= struct.allowed_noise_min and current_terrain_noise <= struct.allowed_noise_max:
+							valid_spot_found = true
+					else:
+						valid_spot_found = true
+						
+					attempts += 1
+					
+				if valid_spot_found:
+					var random_struct = struct.duplicate() 
+					random_struct.tile_position = Vector2(random_x, random_y)
+					_all_structures.append(random_struct)
+				else:
+					print("Warning: Could not find valid spawn for ", struct.structure_name, " after 50 attempts.")
 
 func generate_chunk_map() -> void:
 	# Clear old chunks before generating new ones
