@@ -16,7 +16,7 @@ extends Node2D
 @export var path_margin_tiles: float = 30.0
 @export var path_length_multiplier_for_deviation: float = 0.25
 @export var curve_bake_interval: float = 20.0
-@export var number_of_attempts_for_random_path: int = 100
+@export var max_random_path_attempts: int = 100
 @export var river_curve_point_one_ratio: float = 0.33
 @export var river_curve_point_two_ratio: float = 0.66
 
@@ -179,8 +179,8 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 		if struct.influence_type == PlacedStructure.InfluenceType.NONE:
 			continue
 			
-		var v_struct = current_point - struct.tile_position
-		var dist = v_struct.length()
+		var vector_to_structure = current_point - struct.tile_position
+		var dist = vector_to_structure.length()
 		
 		# Circular land influence
 		if struct.influence_type == PlacedStructure.InfluenceType.CIRCLE:
@@ -190,7 +190,7 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 				
 		# Directional land influence (prevents river carving behind structures)
 		elif struct.influence_type == PlacedStructure.InfluenceType.DIRECTIONAL:
-			var is_behind = v_struct.dot(struct.land_direction.normalized()) > 0.0
+			var is_behind = vector_to_structure.dot(struct.land_direction.normalized()) > 0.0
 			if is_behind:
 				if dist < struct.land_radius_tiles:
 					var factor = 1.0 - (dist / struct.land_radius_tiles)
@@ -239,22 +239,22 @@ func _generate_river_curve() -> void:
 	var handle_len = path_length * path_length_multiplier_for_deviation 
 	
 	# Randomize curve control points
-	var offset_one = randf_range(max_path_deviation * 0.5, max_path_deviation)
+	var midpoint_first = randf_range(max_path_deviation * 0.5, max_path_deviation)
 	if randi() % 2 == 0: 
-		offset_one = -offset_one
+		midpoint_first = -midpoint_first
 	
-	var offset_two = randf_range(max_path_deviation * 0.5, max_path_deviation)
-	if offset_one > 0: 
-		offset_two = -offset_two
+	var midpoint_second = randf_range(max_path_deviation * 0.5, max_path_deviation)
+	if midpoint_first > 0: 
+		midpoint_second = -midpoint_second
 	
 	# Plot points
 	curve.add_point(start_pos_tiles)
 	
 	var point_one = start_pos_tiles + (path_vector * river_curve_point_one_ratio)
-	curve.add_point(point_one + (path_normal * offset_one), -path_dir * handle_len, path_dir * handle_len)
+	curve.add_point(point_one + (path_normal * midpoint_first), -path_dir * handle_len, path_dir * handle_len)
 	
 	var point_two = start_pos_tiles + (path_vector * river_curve_point_two_ratio)
-	curve.add_point(point_two + (path_normal * offset_two), -path_dir * handle_len, path_dir * handle_len)
+	curve.add_point(point_two + (path_normal * midpoint_second), -path_dir * handle_len, path_dir * handle_len)
 	
 	curve.add_point(end_pos_tiles)
 	
@@ -296,7 +296,7 @@ func _randomize_ports() -> void:
 	var valid_positions = false
 	var attempts = 0
 	
-	while not valid_positions and attempts < number_of_attempts_for_random_path:
+	while not valid_positions and attempts < max_random_path_attempts:
 		start_pos_tiles = Vector2(randf_range(min_coord, max_x), randf_range(min_coord, max_y))
 		end_pos_tiles = Vector2(randf_range(min_coord, max_x), randf_range(min_coord, max_y))
 		
