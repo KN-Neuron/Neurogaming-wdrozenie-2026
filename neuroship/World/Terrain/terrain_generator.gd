@@ -16,7 +16,9 @@ extends Node2D
 @export var path_margin_tiles: float = 30.0
 @export var path_length_multiplier_for_deviation: float = 0.25
 @export var curve_bake_interval: float = 20.0
-var number_of_attempts_for_random_path: int = 100
+@export var number_of_attempts_for_random_path: int = 100
+@export var river_curve_point_one_ratio: float = 0.33
+@export var river_curve_point_two_ratio: float = 0.66
 
 @export var start_pos_tiles: Vector2 = Vector2(10, 10)
 @export var end_pos_tiles: Vector2 = Vector2(300, 300)
@@ -106,6 +108,10 @@ func _initialize_structures() -> void:
 			_all_structures.append(struct)
 
 func generate_chunk_map() -> void:
+	for child in get_children():
+		if child is ChunkBaseTerrain:
+			child.queue_free()
+
 	if biomes.is_empty():
 		printerr("No biomes provided. Cannot generate terrain.")
 		return
@@ -135,7 +141,7 @@ func generate_chunk_map() -> void:
 			
 			if not chunk_instance:
 				print("Warning: No biome found for noise value ", macro_noise, " at chunk (", x, ", ", y, "). Using default biome.")
-				chunk_instance = biomes[0].chunk_scenes.pick_random().instantiate() as Node2D
+				chunk_instance = biomes[biomes.size() - 1].chunk_scenes.pick_random().instantiate() as Node2D
 			
 			chunk_instance.position = Vector2(x, y) * chunk_size_pixels
 			
@@ -219,10 +225,10 @@ func _generate_river_curve() -> void:
 		offset_two = -offset_two
 	
 	curve.add_point(start_pos_tiles)
-	var point_one = start_pos_tiles + (path_vector * 0.33)
+	var point_one = start_pos_tiles + (path_vector * river_curve_point_one_ratio)
 	curve.add_point(point_one + (path_normal * offset_one), -path_dir * handle_len, path_dir * handle_len)
 	
-	var point_two = start_pos_tiles + (path_vector * 0.66)
+	var point_two = start_pos_tiles + (path_vector * river_curve_point_two_ratio)
 	curve.add_point(point_two + (path_normal * offset_two), -path_dir * handle_len, path_dir * handle_len)
 	
 	curve.add_point(end_pos_tiles)

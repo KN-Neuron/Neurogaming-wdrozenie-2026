@@ -5,9 +5,8 @@ extends Node2D
 @export var chunk_width: int = 16
 @export var chunk_height: int = 16
 
+@export var atlas_source_id: int = 0
 @export var tile_rules: Array[TerrainRule] = []
-
-const SOURCE_ID := 0
 
 func generate_terrain_from_noise(noise_function: Callable, chunk_grid_pos: Vector2i) -> void:
 	if not terrain_tile_map_layer:
@@ -28,7 +27,7 @@ func generate_terrain_from_noise(noise_function: Callable, chunk_grid_pos: Vecto
 			
 			var selected_tile: Vector2i = _get_tile_from_noise(noise_value)
 			
-			terrain_tile_map_layer.set_cell(Vector2i(x, y), SOURCE_ID, selected_tile)
+			terrain_tile_map_layer.set_cell(Vector2i(x, y), atlas_source_id, selected_tile)
 
 func _get_tile_from_noise(noise_value: float) -> Vector2i:
 	for rule in tile_rules:
