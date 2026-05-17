@@ -11,10 +11,14 @@ extends Node2D
 @export var additional_structures: Array[PlacedStructure] = []
 
 @export_group("Path")
+@export var randomize_path: bool = true
+@export var min_path_length_tiles: float = 150.0
+@export var path_margin_tiles: float = 30.0
+
 @export var start_pos_tiles: Vector2 = Vector2(10, 10)
 @export var end_pos_tiles: Vector2 = Vector2(300, 300)
 @export var path_width_tiles: float = 15.0
-@export var max_path_deviation: float = 80.0 
+@export var max_path_deviation: float = 80.0
 
 var _baked_river_path: PackedVector2Array
 var _river_bounds: Rect2
@@ -51,6 +55,9 @@ func _ready() -> void:
 	_noise.seed = world_seed
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	_noise.frequency = noise_frequency
+
+	if randomize_path:
+		_randomize_ports()
 
 	_initialize_structures()
 	_generate_river_curve()
@@ -242,3 +249,25 @@ func _spawn_structures() -> void:
 			var instance = struct.scene.instantiate() as Node2D
 			instance.position = struct.tile_position * tile_size
 			add_child(instance)
+
+func _randomize_ports() -> void:
+	var max_x = (grid_width * tiles_per_chunk) - path_margin_tiles
+	var max_y = (grid_height * tiles_per_chunk) - path_margin_tiles
+	var min_coord = path_margin_tiles
+	
+	var valid_positions = false
+	var attempts = 0
+	
+	while not valid_positions and attempts < 100:
+		start_pos_tiles = Vector2(randf_range(min_coord, max_x), randf_range(min_coord, max_y))
+		end_pos_tiles = Vector2(randf_range(min_coord, max_x), randf_range(min_coord, max_y))
+		
+		if start_pos_tiles.distance_to(end_pos_tiles) >= min_path_length_tiles:
+			valid_positions = true
+			
+		attempts += 1
+
+	if not valid_positions:
+		start_pos_tiles = Vector2(min_coord, min_coord)
+		end_pos_tiles = Vector2(max_x, max_y)
+		print("Warning: Map too small for min_path_length. Forcing corners.")
