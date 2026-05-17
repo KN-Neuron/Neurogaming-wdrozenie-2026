@@ -177,7 +177,7 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 	if inside_directional_cutoff:
 		return base_noise
 		
-	var min_distance_sq = 999999.0
+	var min_distance_sq = INF
 	var path_width_sq = path_width_tiles * path_width_tiles
 	var is_near_any_segment = false
 	
