@@ -11,7 +11,6 @@
 
 [node name="TerrainGenerator" type="Node2D" unique_id=1720604078]
 script = ExtResource("1_yh308")
-debug_mode = true
 start_port_scene = ExtResource("2_6vbfo")
 end_port_scene = ExtResource("3_cgc3n")
 biomes = Array[ExtResource("2_hsgs1")]([ExtResource("3_rmhb2"), ExtResource("4_svws0"), ExtResource("5_m31hp")])
