@@ -6,6 +6,9 @@ extends Node2D
 @export_group("Structures")
 @export var start_port_scene: PackedScene
 @export var end_port_scene: PackedScene
+@export var port_ground_noise_target: float = 0.4
+@export var port_land_cap_multiplier: float = 1.5
+@export var additional_structures: Array[PlacedStructure] = []
 
 @export_group("Path")
 @export var start_pos_tiles: Vector2 = Vector2(10, 10)
@@ -16,6 +19,7 @@ extends Node2D
 var _baked_river_path: PackedVector2Array
 var _river_bounds: Rect2
 var _segment_bounds: Array[Rect2]
+var _all_structures: Array[PlacedStructure] = []
 
 @export_group("Chunk Generation")
 @export var chunk_size_pixels: Vector2 = Vector2(512, 512)
@@ -30,7 +34,6 @@ var _segment_bounds: Array[Rect2]
 @export var use_random_seed: bool = true
 @export var world_seed: int = 0
 @export var noise_frequency: float = 0.05
-@export var port_ground_noise_target: float = 0.4
 
 var _noise: FastNoiseLite
 
@@ -49,27 +52,53 @@ func _ready() -> void:
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	_noise.frequency = noise_frequency
 
+	_initialize_structures()
 	_generate_river_curve()
 	
 	biomes.sort_custom(func(a, b): return a.upper_threshold < b.upper_threshold)
 
 	generate_chunk_map()
-
 	_spawn_structures()
 
 	if debug_mode:
-		# _create_debug_marker(start_pos_tiles, "Start", Color.GREEN)
-		# _create_debug_marker(end_pos_tiles, "End", Color.RED)
-
 		var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
 		$Camera2D.position = start_pos_tiles * tile_size
+
+func _initialize_structures() -> void:
+	_all_structures.clear()
+	
+	var total_path_vector = end_pos_tiles - start_pos_tiles
+	var main_path_dir = total_path_vector.normalized()
+	var land_cap_radius = path_width_tiles * port_land_cap_multiplier
+	
+	if start_port_scene:
+		var start_struct = PlacedStructure.new()
+		start_struct.structure_name = "Start Port"
+		start_struct.scene = start_port_scene
+		start_struct.tile_position = start_pos_tiles
+		start_struct.land_radius_tiles = land_cap_radius
+		start_struct.influence_type = PlacedStructure.InfluenceType.DIRECTIONAL
+		start_struct.land_direction = -main_path_dir
+		_all_structures.append(start_struct)
+		
+	if end_port_scene:
+		var end_struct = PlacedStructure.new()
+		end_struct.structure_name = "End Port"
+		end_struct.scene = end_port_scene
+		end_struct.tile_position = end_pos_tiles
+		end_struct.land_radius_tiles = land_cap_radius
+		end_struct.influence_type = PlacedStructure.InfluenceType.DIRECTIONAL
+		end_struct.land_direction = main_path_dir
+		_all_structures.append(end_struct)
+		
+	for struct in additional_structures:
+		if struct:
+			_all_structures.append(struct)
 
 func generate_chunk_map() -> void:
 	if biomes.is_empty():
 		printerr("No biomes provided. Cannot generate terrain.")
 		return
-	
-	var land_cap_radius = path_width_tiles * 1.5
 	
 	for x in range(grid_width):
 		for y in range(grid_height):
@@ -77,13 +106,14 @@ func generate_chunk_map() -> void:
 			var center_tile_y = (y * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
 			
 			var chunk_center_tiles = Vector2(center_tile_x, center_tile_y)
-			var dist_to_start = chunk_center_tiles.distance_to(start_pos_tiles)
-			var dist_to_end = chunk_center_tiles.distance_to(end_pos_tiles)
-			
 			var macro_noise: float = _get_world_noise(center_tile_x, center_tile_y)
 			
-			if dist_to_start < (land_cap_radius + tiles_per_chunk) or dist_to_end < (land_cap_radius + tiles_per_chunk):
-				macro_noise = port_ground_noise_target
+			for struct in _all_structures:
+				if struct.influence_type != PlacedStructure.InfluenceType.NONE:
+					var dist = chunk_center_tiles.distance_to(struct.tile_position)
+					if dist < (struct.land_radius_tiles + tiles_per_chunk):
+						macro_noise = port_ground_noise_target
+						break
 			
 			var chunk_instance: Node2D = null
 			
@@ -110,31 +140,32 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 	if not _river_bounds.has_point(current_point):
 		return _noise.get_noise_2d(global_x, global_y)
 	
-	var total_path_vector = end_pos_tiles - start_pos_tiles
-	var main_path_dir = total_path_vector.normalized()
-	
-	var vector_from_start = current_point - start_pos_tiles
-	var is_behind_start = vector_from_start.dot(main_path_dir) < 0.0
-	
-	var vector_from_end = current_point - end_pos_tiles
-	var is_past_end = vector_from_end.dot(main_path_dir) > 0.0
-	
-	var land_cap_radius = path_width_tiles * 1.5
-	
 	var base_noise = _noise.get_noise_2d(global_x, global_y)
-
-	if is_behind_start and vector_from_start.length() < land_cap_radius:
-		var dist = vector_from_start.length()
-		var factor = 1.0 - (dist / land_cap_radius)
-		return lerp(base_noise, port_ground_noise_target, factor)
+	
+	var inside_directional_cutoff := false
+	
+	for struct in _all_structures:
+		if struct.influence_type == PlacedStructure.InfluenceType.NONE:
+			continue
+			
+		var v_struct = current_point - struct.tile_position
+		var dist = v_struct.length()
 		
-	if is_past_end and vector_from_end.length() < land_cap_radius:
-		var dist = vector_from_end.length()
-		var factor = 1.0 - (dist / land_cap_radius)
-		return lerp(base_noise, port_ground_noise_target, factor)
-		
-	if is_behind_start or is_past_end:
-		return _noise.get_noise_2d(global_x, global_y)
+		if struct.influence_type == PlacedStructure.InfluenceType.CIRCLE:
+			if dist < struct.land_radius_tiles:
+				var factor = 1.0 - (dist / struct.land_radius_tiles)
+				return lerp(base_noise, port_ground_noise_target, factor)
+				
+		elif struct.influence_type == PlacedStructure.InfluenceType.DIRECTIONAL:
+			var is_behind = v_struct.dot(struct.land_direction.normalized()) > 0.0
+			if is_behind:
+				if dist < struct.land_radius_tiles:
+					var factor = 1.0 - (dist / struct.land_radius_tiles)
+					return lerp(base_noise, port_ground_noise_target, factor)
+				inside_directional_cutoff = true
+				
+	if inside_directional_cutoff:
+		return base_noise
 		
 	var min_distance_sq = 999999.0
 	var path_width_sq = path_width_tiles * path_width_tiles
@@ -203,36 +234,11 @@ func _generate_river_curve() -> void:
 			
 	_river_bounds = _river_bounds.grow(path_width_tiles + 2.0)
 
-func _create_debug_marker(tile_pos: Vector2, marker_text: String, marker_color: Color) -> void:
-	var marker = Node2D.new()
-	marker.z_index = 100
-
-	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
-	marker.position = tile_pos * tile_size
-
-	var rect = ColorRect.new()
-	rect.color = marker_color
-	rect.size = Vector2(tile_size / 2.0, tile_size / 2.0)
-	rect.position = -rect.size / 2.0
-
-	var label = Label.new()
-	label.text = marker_text
-	label.add_theme_font_size_override("font_size", 128)
-	label.add_theme_color_override("font_color", Color.WHITE)
-	label.position = Vector2(-label.size.x / 2.0, -250.0)
-	marker.add_child(label)
-
-	add_child(marker)
-
 func _spawn_structures() -> void:
 	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
 	
-	if start_port_scene:
-		var start_port = start_port_scene.instantiate() as Node2D
-		start_port.position = start_pos_tiles * tile_size
-		add_child(start_port)
-		
-	if end_port_scene:
-		var end_port = end_port_scene.instantiate() as Node2D
-		end_port.position = end_pos_tiles * tile_size
-		add_child(end_port)
+	for struct in _all_structures:
+		if struct.scene:
+			var instance = struct.scene.instantiate() as Node2D
+			instance.position = struct.tile_position * tile_size
+			add_child(instance)
