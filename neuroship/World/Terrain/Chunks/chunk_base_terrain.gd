@@ -9,16 +9,15 @@ extends Node2D
 
 const SOURCE_ID := 0
 
-func _ready() -> void:
-	if not tile_rules.is_empty():
-		tile_rules.sort_custom(func(a, b): return a.upper_threshold < b.upper_threshold)
-
 func generate_terrain_from_noise(noise_function: Callable, chunk_grid_pos: Vector2i) -> void:
 	if not terrain_tile_map_layer:
 		printerr("No TileMapLayer assigned. Cannot generate terrain.")
 		return
 
 	terrain_tile_map_layer.clear()
+
+	if not tile_rules.is_empty():
+		tile_rules.sort_custom(func(a, b): return a.upper_threshold < b.upper_threshold)
 	
 	for x in range(chunk_width):
 		for y in range(chunk_height):
@@ -38,5 +37,5 @@ func _get_tile_from_noise(noise_value: float) -> Vector2i:
 
 	if tile_rules.size() > 0:
 		return tile_rules[-1].tile_coords
-	
+
 	return Vector2i.ZERO
