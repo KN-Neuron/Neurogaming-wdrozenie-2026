@@ -115,8 +115,26 @@ func _initialize_structures() -> void:
 		
 	# Append custom structures
 	for struct in additional_structures:
-		if struct:
+		if not struct:
+			continue
+			
+		if struct.placement_method == PlacedStructure.PlacementMethod.FIXED:
 			_all_structures.append(struct)
+		else:
+			var spawn_count = randi_range(struct.random_spawn_count_min, struct.random_spawn_count_max)
+			
+			var min_coord = path_margin_tiles
+			var max_x = (grid_width * tiles_per_chunk) - path_margin_tiles
+			var max_y = (grid_height * tiles_per_chunk) - path_margin_tiles
+			
+			for i in range(spawn_count):
+				var random_struct = struct.duplicate() 
+				
+				var random_x = randf_range(min_coord, max_x)
+				var random_y = randf_range(min_coord, max_y)
+				
+				random_struct.tile_position = Vector2(random_x, random_y)
+				_all_structures.append(random_struct)
 
 func generate_chunk_map() -> void:
 	# Clear old chunks before generating new ones

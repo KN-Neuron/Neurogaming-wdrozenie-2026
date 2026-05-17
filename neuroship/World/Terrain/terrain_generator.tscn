@@ -15,7 +15,9 @@
 script = ExtResource("4_l0d0r")
 structure_name = "Whirlpool"
 scene = ExtResource("5_2oe32")
-tile_position = Vector2(150, 200)
+placement_method = 1
+random_spawn_count_min = 5
+random_spawn_count_max = 15
 influence_radius_tiles = 15.0
 target_noise = -1.0
 metadata/_custom_type_script = "uid://deumldnpu7j3s"
