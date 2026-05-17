@@ -95,9 +95,10 @@ func _initialize_structures() -> void:
 		start_struct.structure_name = "Start Port"
 		start_struct.scene = start_port_scene
 		start_struct.tile_position = start_pos_tiles
-		start_struct.land_radius_tiles = land_cap_radius
+		start_struct.influence_radius_tiles = land_cap_radius
+		start_struct.target_noise = port_ground_noise_target
 		start_struct.influence_type = PlacedStructure.InfluenceType.DIRECTIONAL
-		start_struct.land_direction = -main_path_dir
+		start_struct.influence_direction = -main_path_dir
 		_all_structures.append(start_struct)
 		
 	# Auto-configure end port logic
@@ -106,9 +107,10 @@ func _initialize_structures() -> void:
 		end_struct.structure_name = "End Port"
 		end_struct.scene = end_port_scene
 		end_struct.tile_position = end_pos_tiles
-		end_struct.land_radius_tiles = land_cap_radius
+		end_struct.influence_radius_tiles = land_cap_radius
+		end_struct.target_noise = port_ground_noise_target
 		end_struct.influence_type = PlacedStructure.InfluenceType.DIRECTIONAL
-		end_struct.land_direction = main_path_dir
+		end_struct.influence_direction = main_path_dir
 		_all_structures.append(end_struct)
 		
 	# Append custom structures
@@ -135,12 +137,12 @@ func generate_chunk_map() -> void:
 			var chunk_center_tiles = Vector2(center_tile_x, center_tile_y)
 			var macro_noise: float = _get_world_noise(center_tile_x, center_tile_y)
 			
-			# Force land biome if chunk is near any land structure
+			# Force biome if chunk is near any structure
 			for struct in _all_structures:
 				if struct.influence_type != PlacedStructure.InfluenceType.NONE:
 					var dist = chunk_center_tiles.distance_to(struct.tile_position)
-					if dist < (struct.land_radius_tiles + tiles_per_chunk):
-						macro_noise = port_ground_noise_target
+					if dist < (struct.influence_radius_tiles + tiles_per_chunk):
+						macro_noise = struct.target_noise
 						break
 			
 			var chunk_instance: Node2D = null
@@ -182,19 +184,19 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 		var vector_to_structure = current_point - struct.tile_position
 		var dist = vector_to_structure.length()
 		
-		# Circular land influence
+		# Circular influence
 		if struct.influence_type == PlacedStructure.InfluenceType.CIRCLE:
-			if dist < struct.land_radius_tiles:
-				var factor = 1.0 - (dist / struct.land_radius_tiles)
-				return lerp(base_noise, port_ground_noise_target, factor)
+			if dist < struct.influence_radius_tiles:
+				var factor = 1.0 - (dist / struct.influence_radius_tiles)
+				return lerp(base_noise, struct.target_noise, factor) # Używamy unikalnego szumu!
 				
-		# Directional land influence (prevents river carving behind structures)
+		# Directional influence
 		elif struct.influence_type == PlacedStructure.InfluenceType.DIRECTIONAL:
-			var is_behind = vector_to_structure.dot(struct.land_direction.normalized()) > 0.0
+			var is_behind = vector_to_structure.dot(struct.influence_direction.normalized()) > 0.0
 			if is_behind:
-				if dist < struct.land_radius_tiles:
-					var factor = 1.0 - (dist / struct.land_radius_tiles)
-					return lerp(base_noise, port_ground_noise_target, factor)
+				if dist < struct.influence_radius_tiles:
+					var factor = 1.0 - (dist / struct.influence_radius_tiles)
+					return lerp(base_noise, struct.target_noise, factor) # Używamy unikalnego szumu!
 				inside_directional_cutoff = true
 				
 	# Ignore river carving if standing behind a directional structure
