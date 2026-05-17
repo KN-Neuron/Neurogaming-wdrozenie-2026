@@ -14,6 +14,9 @@ extends Node2D
 @export var randomize_path: bool = true
 @export var min_path_length_tiles: float = 150.0
 @export var path_margin_tiles: float = 30.0
+@export var path_length_multiplier_for_deviation: float = 0.25
+@export var curve_bake_interval: float = 20.0
+var number_of_attempts_for_random_path: int = 100
 
 @export var start_pos_tiles: Vector2 = Vector2(10, 10)
 @export var end_pos_tiles: Vector2 = Vector2(300, 300)
@@ -205,7 +208,7 @@ func _generate_river_curve() -> void:
 	var path_dir = path_vector.normalized()
 	var path_normal = Vector2(-path_dir.y, path_dir.x)
 	
-	var handle_len = path_length * 0.25 
+	var handle_len = path_length * path_length_multiplier_for_deviation 
 	
 	var offset_one = randf_range(max_path_deviation * 0.5, max_path_deviation)
 	if randi() % 2 == 0: 
@@ -224,7 +227,7 @@ func _generate_river_curve() -> void:
 	
 	curve.add_point(end_pos_tiles)
 	
-	curve.bake_interval = 20.0 
+	curve.bake_interval = curve_bake_interval
 	_baked_river_path = curve.get_baked_points()
 	
 	_river_bounds = Rect2(start_pos_tiles, Vector2.ZERO)
@@ -258,7 +261,7 @@ func _randomize_ports() -> void:
 	var valid_positions = false
 	var attempts = 0
 	
-	while not valid_positions and attempts < 100:
+	while not valid_positions and attempts < number_of_attempts_for_random_path:
 		start_pos_tiles = Vector2(randf_range(min_coord, max_x), randf_range(min_coord, max_y))
 		end_pos_tiles = Vector2(randf_range(min_coord, max_x), randf_range(min_coord, max_y))
 		
