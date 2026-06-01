@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dyqcqi6dkf648" path="res://World/Terrain/Structures/whirlpool.tscn" id="5_2oe32"]
 [ext_resource type="Resource" uid="uid://xrhcncu8q1tx" path="res://World/Terrain/Biomes/biome_rocks.tres" id="5_m31hp"]
 [ext_resource type="Script" uid="uid://sxcgp82q16f" path="res://World/Terrain/debug_camera.gd" id="6_r4csa"]
+[ext_resource type="Resource" uid="uid://u15jgr7ju7pd" path="res://World/Terrain/Biomes/biome_island_desert.tres" id="9_2oe32"]
 
 [sub_resource type="Resource" id="Resource_h1sud"]
 script = ExtResource("4_l0d0r")
@@ -30,7 +31,7 @@ debug_mode = true
 start_port_scene = ExtResource("2_6vbfo")
 end_port_scene = ExtResource("3_cgc3n")
 additional_structures = Array[ExtResource("4_l0d0r")]([SubResource("Resource_h1sud")])
-biomes = Array[ExtResource("2_hsgs1")]([ExtResource("3_rmhb2"), ExtResource("4_svws0"), ExtResource("5_m31hp")])
+biomes = Array[ExtResource("2_hsgs1")]([ExtResource("3_rmhb2"), ExtResource("4_svws0"), ExtResource("9_2oe32"), ExtResource("5_m31hp")])
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1682407626]
 script = ExtResource("6_r4csa")
