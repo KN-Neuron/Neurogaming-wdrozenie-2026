@@ -6,6 +6,6 @@
 [resource]
 script = ExtResource("1_kbyhh")
 biome_name = "Island"
-upper_threshold = 0.7
+upper_threshold = 0.5
 chunk_scenes = Array[PackedScene]([ExtResource("1_osw2j")])
 metadata/_custom_type_script = "uid://cjs1ldj1eg60d"
