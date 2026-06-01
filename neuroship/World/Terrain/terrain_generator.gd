@@ -31,6 +31,7 @@ var _river_bounds: Rect2
 var _segment_bounds: Array[Rect2]
 var _all_structures: Array[PlacedStructure] = []
 var _noise: FastNoiseLite
+var _moisture_noise: FastNoiseLite
 
 @export_group("Chunk Generation")
 @export var chunk_size_pixels: Vector2 = Vector2(512, 512)
@@ -45,6 +46,7 @@ var _noise: FastNoiseLite
 @export var use_random_seed: bool = true
 @export var world_seed: int = 0
 @export var noise_frequency: float = 0.05
+@export var moisture_frequency: float = 0.02
 
 func _ready() -> void:
 	# Cleanup debug tools if not needed
@@ -64,6 +66,18 @@ func _ready() -> void:
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	_noise.frequency = noise_frequency
 
+	_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+	_noise.fractal_octaves = 4 # Złożenie z 4 warstw detali
+	_noise.domain_warp_enabled = true
+	_noise.domain_warp_amplitude = 20.0 # Poszarpane, naturalne brzegi
+
+	_moisture_noise = FastNoiseLite.new()
+	_moisture_noise.seed = world_seed + 9999 # Inny seed, żeby woda nie pokrywała się z ukształtowaniem terenu!
+	_moisture_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	_moisture_noise.frequency = moisture_frequency
+	_moisture_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+	_moisture_noise.fractal_octaves = 3
+
 	# Execute world generation pipeline
 	if randomize_path:
 		_randomize_ports()
@@ -71,8 +85,12 @@ func _ready() -> void:
 	_generate_river_curve()
 	_initialize_structures()
 	
-	# Sort biomes for waterfall logic
-	biomes.sort_custom(func(a, b): return a.upper_threshold < b.upper_threshold)
+	# Sort biomes for 2D waterfall logic
+	biomes.sort_custom(func(a, b): 
+		if a.upper_threshold == b.upper_threshold:
+			return a.moisture_threshold < b.moisture_threshold
+		return a.upper_threshold < b.upper_threshold
+	)
 
 	generate_chunk_map()
 	_spawn_structures()
@@ -172,6 +190,7 @@ func generate_chunk_map() -> void:
 			
 			var chunk_center_tiles = Vector2(center_tile_x, center_tile_y)
 			var macro_noise: float = _get_world_noise(center_tile_x, center_tile_y)
+			var moisture: float = _moisture_noise.get_noise_2d(center_tile_x, center_tile_y)
 			
 			# Force biome if chunk is near any structure
 			for struct in _all_structures:
@@ -179,13 +198,13 @@ func generate_chunk_map() -> void:
 					var dist = chunk_center_tiles.distance_to(struct.tile_position)
 					if dist < (struct.influence_radius_tiles + tiles_per_chunk):
 						macro_noise = struct.target_noise
+						moisture = 1.0
 						break
 			
 			var chunk_instance: Node2D = null
 			
-			# Waterfall biome selection
 			for biome in biomes:
-				if macro_noise <= biome.upper_threshold:
+				if macro_noise <= biome.upper_threshold and moisture <= biome.moisture_threshold:
 					if not biome.chunk_scenes.is_empty():
 						chunk_instance = biome.chunk_scenes.pick_random().instantiate() as Node2D
 					break

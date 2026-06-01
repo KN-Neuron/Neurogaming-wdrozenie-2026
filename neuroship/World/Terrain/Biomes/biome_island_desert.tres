@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BiomeData" format=3 uid="uid://u15jgr7ju7pd"]
+
+[ext_resource type="Script" uid="uid://cjs1ldj1eg60d" path="res://World/Terrain/biome_data.gd" id="1_1ui7p"]
+[ext_resource type="PackedScene" path="res://World/Terrain/Chunks/chunk_island_desert.tscn" id="1_jiahe"]
+
+[resource]
+script = ExtResource("1_1ui7p")
+biome_name = "Island desert"
+upper_threshold = 0.5
+chunk_scenes = Array[PackedScene]([ExtResource("1_jiahe")])
+metadata/_custom_type_script = "uid://cjs1ldj1eg60d"
