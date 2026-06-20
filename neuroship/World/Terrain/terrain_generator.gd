@@ -3,6 +3,9 @@ extends Node2D
 @export_group("Debug")
 @export var debug_mode: bool = false
 
+@export_group("Player")
+@export var player_ship_scene: PackedScene
+
 @export_group("Structures")
 @export var start_port_scene: PackedScene
 @export var end_port_scene: PackedScene
@@ -76,6 +79,8 @@ func _ready() -> void:
 
 	generate_chunk_map()
 	_spawn_structures()
+
+	_spawn_player()
 
 	# Focus camera on start port
 	if debug_mode:
@@ -348,3 +353,15 @@ func _randomize_ports() -> void:
 		start_pos_tiles = Vector2(min_coord, min_coord)
 		end_pos_tiles = Vector2(max_x, max_y)
 		print("Warning: Map too small for min_path_length. Forcing corners.")
+
+func _spawn_player() -> void:
+	if not player_ship_scene:
+		printerr("Player ship scene is not assigned")
+		return
+		
+	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
+	var ship_instance = player_ship_scene.instantiate() as Node2D
+	
+	ship_instance.position = start_pos_tiles * tile_size
+	
+	add_child(ship_instance)
