@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://1nfpy1wnogus"]
 
-[ext_resource type="Texture2D" uid="uid://3p1mxd1wydle" path="res://Assets/Environment/temp_terrain_tileset.png" id="1_i7xvh"]
 [ext_resource type="Script" uid="uid://b8xt0mjwmchyn" path="res://World/Terrain/Chunks/chunk_base_terrain.gd" id="1_pl0rd"]
 [ext_resource type="Script" uid="uid://f4a42araetok" path="res://World/Terrain/Chunks/terrain_rule.gd" id="2_exm0c"]
+[ext_resource type="TileSet" uid="uid://b1e3p2vabtgun" path="res://World/Terrain/Chunks/main_tileset.tres" id="3_exm0c"]
 
 [sub_resource type="Resource" id="Resource_nwreg"]
 script = ExtResource("2_exm0c")
@@ -32,36 +32,10 @@ upper_threshold = 99.0
 tile_coords = Vector2i(6, 1)
 metadata/_custom_type_script = "uid://f4a42araetok"
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vr107"]
-texture = ExtResource("1_i7xvh")
-texture_region_size = Vector2i(32, 32)
-0:0/0 = 0
-1:0/0 = 0
-2:0/0 = 0
-3:0/0 = 0
-4:0/0 = 0
-5:0/0 = 0
-6:0/0 = 0
-7:0/0 = 0
-8:0/0 = 0
-0:1/0 = 0
-1:1/0 = 0
-2:1/0 = 0
-3:1/0 = 0
-4:1/0 = 0
-5:1/0 = 0
-6:1/0 = 0
-7:1/0 = 0
-8:1/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_uty1g"]
-tile_size = Vector2i(32, 32)
-sources/0 = SubResource("TileSetAtlasSource_vr107")
-
 [node name="ChunkSimplexIsland" type="Node2D" unique_id=55013528 node_paths=PackedStringArray("terrain_tile_map_layer")]
 script = ExtResource("1_pl0rd")
 terrain_tile_map_layer = NodePath("TileMapLayer")
 tile_rules = Array[ExtResource("2_exm0c")]([SubResource("Resource_nwreg"), SubResource("Resource_jecoo"), SubResource("Resource_tkn2g"), SubResource("Resource_r3yak")])
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=400383897]
-tile_set = SubResource("TileSet_uty1g")
+tile_set = ExtResource("3_exm0c")
