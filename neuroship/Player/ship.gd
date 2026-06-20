@@ -1,7 +1,7 @@
 extends RigidBody2D
 
-@export var engine_power = 75
-@export var turn_torque = 5000
+@export var engine_power = 150
+@export var turn_torque = 10000
 @export var torque_ratio = 300
 @export var lean_speed = 0.01
 @export var lean_threshold_divisor = 50.0
