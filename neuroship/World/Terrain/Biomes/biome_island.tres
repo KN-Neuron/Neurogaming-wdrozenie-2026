@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BiomeData" format=3 uid="uid://dy0drbris03os"]
+
+[ext_resource type="Script" uid="uid://cjs1ldj1eg60d" path="res://World/Terrain/biome_data.gd" id="1_kbyhh"]
+[ext_resource type="PackedScene" uid="uid://1nfpy1wnogus" path="res://World/Terrain/Chunks/chunk_island.tscn" id="1_osw2j"]
+
+[resource]
+script = ExtResource("1_kbyhh")
+biome_name = "Island"
+upper_threshold = 0.5
+chunk_scenes = Array[PackedScene]([ExtResource("1_osw2j")])
+metadata/_custom_type_script = "uid://cjs1ldj1eg60d"

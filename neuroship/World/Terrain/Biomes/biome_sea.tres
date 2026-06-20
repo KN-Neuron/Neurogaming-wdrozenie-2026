@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BiomeData" format=3 uid="uid://bnixigvx40wbn"]
+
+[ext_resource type="PackedScene" uid="uid://g6xwgg080cuf" path="res://World/Terrain/Chunks/chunk_sea.tscn" id="1_w3wd0"]
+[ext_resource type="Script" uid="uid://cjs1ldj1eg60d" path="res://World/Terrain/biome_data.gd" id="2_fwlip"]
+
+[resource]
+script = ExtResource("2_fwlip")
+biome_name = "Sea"
+upper_threshold = 0.35
+chunk_scenes = Array[PackedScene]([ExtResource("1_w3wd0")])
+metadata/_custom_type_script = "uid://cjs1ldj1eg60d"

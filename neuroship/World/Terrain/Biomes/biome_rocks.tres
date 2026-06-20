@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BiomeData" format=3 uid="uid://xrhcncu8q1tx"]
+
+[ext_resource type="Script" uid="uid://cjs1ldj1eg60d" path="res://World/Terrain/biome_data.gd" id="1_jr33x"]
+[ext_resource type="PackedScene" uid="uid://bdbfxj0c6qwwr" path="res://World/Terrain/Chunks/chunk_rocks.tscn" id="1_wfr8k"]
+
+[resource]
+script = ExtResource("1_jr33x")
+biome_name = "Rocks"
+chunk_scenes = Array[PackedScene]([ExtResource("1_wfr8k")])
+metadata/_custom_type_script = "uid://cjs1ldj1eg60d"

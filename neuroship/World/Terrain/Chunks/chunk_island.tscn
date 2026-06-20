@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://1nfpy1wnogus"]
+
+[ext_resource type="Script" uid="uid://b8xt0mjwmchyn" path="res://World/Terrain/Chunks/chunk_base_terrain.gd" id="1_pl0rd"]
+[ext_resource type="Script" uid="uid://f4a42araetok" path="res://World/Terrain/Chunks/terrain_rule.gd" id="2_exm0c"]
+[ext_resource type="TileSet" uid="uid://b1e3p2vabtgun" path="res://World/Terrain/Chunks/main_tileset.tres" id="3_exm0c"]
+
+[sub_resource type="Resource" id="Resource_nwreg"]
+script = ExtResource("2_exm0c")
+rule_name = "Water"
+upper_threshold = 0.0
+tile_coords = Vector2i(8, 0)
+metadata/_custom_type_script = "uid://f4a42araetok"
+
+[sub_resource type="Resource" id="Resource_jecoo"]
+script = ExtResource("2_exm0c")
+rule_name = "Sand"
+upper_threshold = 0.3
+tile_coords = Vector2i(1, 0)
+metadata/_custom_type_script = "uid://f4a42araetok"
+
+[sub_resource type="Resource" id="Resource_tkn2g"]
+script = ExtResource("2_exm0c")
+rule_name = "Grass"
+upper_threshold = 0.5
+tile_coords = Vector2i(6, 0)
+metadata/_custom_type_script = "uid://f4a42araetok"
+
+[sub_resource type="Resource" id="Resource_r3yak"]
+script = ExtResource("2_exm0c")
+rule_name = "Dark Grass"
+upper_threshold = 99.0
+tile_coords = Vector2i(6, 1)
+metadata/_custom_type_script = "uid://f4a42araetok"
+
+[node name="ChunkSimplexIsland" type="Node2D" unique_id=55013528 node_paths=PackedStringArray("terrain_tile_map_layer")]
+script = ExtResource("1_pl0rd")
+terrain_tile_map_layer = NodePath("TileMapLayer")
+tile_rules = Array[ExtResource("2_exm0c")]([SubResource("Resource_nwreg"), SubResource("Resource_jecoo"), SubResource("Resource_tkn2g"), SubResource("Resource_r3yak")])
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=400383897]
+tile_set = ExtResource("3_exm0c")
