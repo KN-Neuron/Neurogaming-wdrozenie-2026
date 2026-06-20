@@ -14,10 +14,6 @@ config/name="Neuroship"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
-[physics]
-
-3d/physics_engine="Jolt Physics"
-
 [rendering]
 
 rendering_device/driver.windows="d3d12"
