@@ -363,6 +363,14 @@ func _spawn_player() -> void:
 	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
 	var ship_instance = player_ship_scene.instantiate() as Node2D
 	
-	ship_instance.position = start_pos_tiles * tile_size
+	var path_vector = end_pos_tiles - start_pos_tiles
+	var path_dir = path_vector.normalized()
+	
+	var num_offser_tiles = 10.0
+	var spawn_offset_tiles = path_dir * num_offser_tiles
+	
+	ship_instance.position = (start_pos_tiles + spawn_offset_tiles) * tile_size
+	
+	ship_instance.rotation = path_dir.angle()
 	
 	add_child(ship_instance)
