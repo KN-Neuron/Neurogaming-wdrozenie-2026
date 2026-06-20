@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Neuroship"
-run/main_scene="uid://c7fefe4qi7myv"
+run/main_scene="uid://7tq5v3c2d356"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
