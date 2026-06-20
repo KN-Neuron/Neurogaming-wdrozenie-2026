@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bdbfxj0c6qwwr"]
 
 [ext_resource type="Script" uid="uid://b8xt0mjwmchyn" path="res://World/Terrain/Chunks/chunk_base_terrain.gd" id="1_d77am"]
-[ext_resource type="Texture2D" uid="uid://3p1mxd1wydle" path="res://World/Terrain/temp_terrain_tileset.png" id="2_4qvje"]
+[ext_resource type="Texture2D" uid="uid://3p1mxd1wydle" path="res://Assets/Environment/temp_terrain_tileset.png" id="2_4qvje"]
 [ext_resource type="Script" uid="uid://f4a42araetok" path="res://World/Terrain/Chunks/terrain_rule.gd" id="2_nc5ms"]
 
 [sub_resource type="Resource" id="Resource_klkej"]

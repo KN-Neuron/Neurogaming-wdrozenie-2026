@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://de7gff3w1anh6"
-path="res://.godot/imported/start_port.png-999ad62d326516847cb77ae2f3a23629.ctex"
+uid="uid://dlh8y4ec8srpi"
+path="res://.godot/imported/boat.png-8cf57821f32b65b0a50af3cb3811640c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://World/Terrain/Structures/start_port.png"
-dest_files=["res://.godot/imported/start_port.png-999ad62d326516847cb77ae2f3a23629.ctex"]
+source_file="res://Assets/Ships/boat.png"
+dest_files=["res://.godot/imported/boat.png-8cf57821f32b65b0a50af3cb3811640c.ctex"]
 
 [params]
 

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bcueeasnn2naq"]
 
-[ext_resource type="Script" uid="uid://cjeh4yr1w6ke7" path="res://ship.gd" id="1_4cq66"]
-[ext_resource type="Texture2D" uid="uid://dlh8y4ec8srpi" path="res://boat.png" id="2_4cq66"]
+[ext_resource type="Script" uid="uid://cjeh4yr1w6ke7" path="res://Player/ship.gd" id="1_4cq66"]
+[ext_resource type="Texture2D" uid="uid://dlh8y4ec8srpi" path="res://Assets/Ships/boat.png" id="2_4cq66"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4cq66"]
 

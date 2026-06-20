@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6qhcqywycyqc"
-path="res://.godot/imported/ocean.webp-67ad336731f944c61a1b913dcb7dd331.ctex"
+uid="uid://dvk2l4dmuyt3q"
+path="res://.godot/imported/whirlpool.jpg-f5c517620cc541c04c81da39afe0ca3a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://ocean.webp"
-dest_files=["res://.godot/imported/ocean.webp-67ad336731f944c61a1b913dcb7dd331.ctex"]
+source_file="res://Assets/Environment/whirlpool.jpg"
+dest_files=["res://.godot/imported/whirlpool.jpg-f5c517620cc541c04c81da39afe0ca3a.ctex"]
 
 [params]
 

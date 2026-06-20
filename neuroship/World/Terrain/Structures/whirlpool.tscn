@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dyqcqi6dkf648"]
 
-[ext_resource type="Texture2D" uid="uid://dvk2l4dmuyt3q" path="res://World/Terrain/Structures/whirlpool.jpg" id="1_ujaao"]
+[ext_resource type="Texture2D" uid="uid://dvk2l4dmuyt3q" path="res://Assets/Environment/whirlpool.jpg" id="1_ujaao"]
 
 [node name="Whirlpool" type="Node2D" unique_id=1026033121]
 

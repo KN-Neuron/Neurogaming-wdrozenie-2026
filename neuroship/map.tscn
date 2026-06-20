@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c7fefe4qi7myv"]
 
-[ext_resource type="PackedScene" uid="uid://bcueeasnn2naq" path="res://ship.tscn" id="1_c7s6e"]
-[ext_resource type="Texture2D" uid="uid://6qhcqywycyqc" path="res://ocean.webp" id="1_wijl4"]
+[ext_resource type="PackedScene" uid="uid://bcueeasnn2naq" path="res://Player/ship.tscn" id="1_c7s6e"]
+[ext_resource type="Texture2D" uid="uid://6qhcqywycyqc" path="res://Assets/Environment/ocean.webp" id="1_wijl4"]
 
 [node name="Map" type="Node2D" unique_id=204722556]
 

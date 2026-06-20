@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://mtn6eun8a2vn"]
 
-[ext_resource type="Texture2D" uid="uid://byhilinnso4tl" path="res://World/Terrain/Structures/end_port.png" id="1_v1ntw"]
+[ext_resource type="Texture2D" uid="uid://byhilinnso4tl" path="res://Assets/Environment/end_port.png" id="1_v1ntw"]
 
 [node name="EndPort" type="Node2D" unique_id=1475920210]
 
