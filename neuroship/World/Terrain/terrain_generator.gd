@@ -363,14 +363,20 @@ func _spawn_player() -> void:
 	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
 	var ship_instance = player_ship_scene.instantiate() as Node2D
 	
-	var path_vector = end_pos_tiles - start_pos_tiles
-	var path_dir = path_vector.normalized()
+	var target_distance_tiles = 15.0
+	var spawn_tile = start_pos_tiles
+	var forward_dir = Vector2.UP 
 	
-	var num_offser_tiles = 10.0
-	var spawn_offset_tiles = path_dir * num_offser_tiles
+	if _baked_river_path.size() > 1:
+		for i in range(1, _baked_river_path.size()):
+			var current_pt = _baked_river_path[i]
+			
+			if start_pos_tiles.distance_to(current_pt) >= target_distance_tiles:
+				spawn_tile = current_pt
+				forward_dir = (current_pt - _baked_river_path[i - 1]).normalized()
+				break
 	
-	ship_instance.position = (start_pos_tiles + spawn_offset_tiles) * tile_size
-	
-	ship_instance.rotation = path_dir.angle()
+	ship_instance.position = spawn_tile * tile_size
+	ship_instance.rotation = forward_dir.angle()
 	
 	add_child(ship_instance)
