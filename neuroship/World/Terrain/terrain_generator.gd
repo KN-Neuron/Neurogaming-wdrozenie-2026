@@ -86,6 +86,7 @@ func _ready() -> void:
 	if debug_mode:
 		var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
 		$Camera2D.position = start_pos_tiles * tile_size
+		$Camera2D.make_current()
 
 func _initialize_structures() -> void:
 	# Combine built-in ports and custom structures into a single array
