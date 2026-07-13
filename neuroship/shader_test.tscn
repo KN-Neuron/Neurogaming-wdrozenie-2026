@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://ciotbv13r1qio"]
+
+[ext_resource type="Shader" uid="uid://dfvxnv4bjqdbk" path="res://GfxAssets/sea_shader.gdshader" id="1_li7c4"]
+[ext_resource type="Texture2D" uid="uid://dr8e4cjabtkvm" path="res://GfxAssets/sea_noise.tres" id="2_h5org"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_14ang"]
+shader = ExtResource("1_li7c4")
+shader_parameter/NOISE = ExtResource("2_h5org")
+shader_parameter/noise_intensity = 0.25
+shader_parameter/wave_width = 0.25
+shader_parameter/direction = Vector2(2, 2)
+shader_parameter/ns = 0.5
+shader_parameter/ts = 0.5
+shader_parameter/c1 = Vector4(0.15, 0.2, 0.3, 1)
+shader_parameter/c2 = Vector4(0.25, 0.35, 0.5, 1)
+shader_parameter/c3 = Vector4(0.1, 0.133, 0.25, 1)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_p4bue"]
+
+[node name="ShaderTest" type="Node2D" unique_id=829457635]
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=552340480]
+material = SubResource("ShaderMaterial_14ang")
+texture = SubResource("PlaceholderTexture2D_p4bue")
+polygon = PackedVector2Array(-128, -128, 128, -128, 128, 128, -128, 128)
+uv = PackedVector2Array(0, 0, 2, 0, 2, 2, 0, 2)
