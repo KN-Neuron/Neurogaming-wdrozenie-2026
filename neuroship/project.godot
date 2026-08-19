@@ -14,6 +14,10 @@ config/name="Neuroship"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[dotnet]
+
+project/assembly_name="Neuroship"
+
 [rendering]
 
 rendering_device/driver.windows="d3d12"
