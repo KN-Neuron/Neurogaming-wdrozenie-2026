@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://de7gff3w1anh6"
-path="res://.godot/imported/start_port.png-999ad62d326516847cb77ae2f3a23629.ctex"
+uid="uid://dvk2l4dmuyt3q"
+path="res://.godot/imported/whirlpool.jpg-f5c517620cc541c04c81da39afe0ca3a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://World/Terrain/Structures/start_port.png"
-dest_files=["res://.godot/imported/start_port.png-999ad62d326516847cb77ae2f3a23629.ctex"]
+source_file="res://Assets/Environment/whirlpool.jpg"
+dest_files=["res://.godot/imported/whirlpool.jpg-f5c517620cc541c04c81da39afe0ca3a.ctex"]
 
 [params]
 

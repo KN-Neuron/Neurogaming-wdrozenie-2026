@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvk2l4dmuyt3q"
-path="res://.godot/imported/whirlpool.jpg-6dec64e4033b0af7f8dcb5a789a4c82e.ctex"
+uid="uid://3p1mxd1wydle"
+path="res://.godot/imported/temp_terrain_tileset.png-b62945bc1f3daac848d6a80578efefb3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://World/Terrain/Structures/whirlpool.jpg"
-dest_files=["res://.godot/imported/whirlpool.jpg-6dec64e4033b0af7f8dcb5a789a4c82e.ctex"]
+source_file="res://Assets/Environment/temp_terrain_tileset.png"
+dest_files=["res://.godot/imported/temp_terrain_tileset.png-b62945bc1f3daac848d6a80578efefb3.ctex"]
 
 [params]
 

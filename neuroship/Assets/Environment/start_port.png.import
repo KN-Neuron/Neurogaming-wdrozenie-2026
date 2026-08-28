@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byhilinnso4tl"
-path="res://.godot/imported/end_port.png-60ed23234b3efd6b184fe410b518da6d.ctex"
+uid="uid://de7gff3w1anh6"
+path="res://.godot/imported/start_port.png-8dcf66e2815d1a6f58c0d85399e9acc4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://World/Terrain/Structures/end_port.png"
-dest_files=["res://.godot/imported/end_port.png-60ed23234b3efd6b184fe410b518da6d.ctex"]
+source_file="res://Assets/Environment/start_port.png"
+dest_files=["res://.godot/imported/start_port.png-8dcf66e2815d1a6f58c0d85399e9acc4.ctex"]
 
 [params]
 

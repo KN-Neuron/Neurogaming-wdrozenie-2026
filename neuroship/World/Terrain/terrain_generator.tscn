@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bxbx753p44ymo"]
 
 [ext_resource type="Script" uid="uid://bplgrp3pkafrj" path="res://World/Terrain/terrain_generator.gd" id="1_yh308"]
+[ext_resource type="PackedScene" uid="uid://bcueeasnn2naq" path="res://Player/ship.tscn" id="2_2oe32"]
 [ext_resource type="PackedScene" uid="uid://dym5t4pdl3u6p" path="res://World/Terrain/Structures/start_port.tscn" id="2_6vbfo"]
 [ext_resource type="Script" uid="uid://cjs1ldj1eg60d" path="res://World/Terrain/biome_data.gd" id="2_hsgs1"]
 [ext_resource type="PackedScene" uid="uid://mtn6eun8a2vn" path="res://World/Terrain/Structures/end_port.tscn" id="3_cgc3n"]
@@ -26,7 +27,7 @@ metadata/_custom_type_script = "uid://deumldnpu7j3s"
 
 [node name="TerrainGenerator" type="Node2D" unique_id=1720604078]
 script = ExtResource("1_yh308")
-debug_mode = true
+player_ship_scene = ExtResource("2_2oe32")
 start_port_scene = ExtResource("2_6vbfo")
 end_port_scene = ExtResource("3_cgc3n")
 additional_structures = Array[ExtResource("4_l0d0r")]([SubResource("Resource_h1sud")])

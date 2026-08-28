@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://3p1mxd1wydle"
-path="res://.godot/imported/temp_terrain_tileset.png-336d46efecd52ddf1bba5c43748b951e.ctex"
+uid="uid://byhilinnso4tl"
+path="res://.godot/imported/end_port.png-ee685cb4d15f3842f8839b4321535e0a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://World/Terrain/temp_terrain_tileset.png"
-dest_files=["res://.godot/imported/temp_terrain_tileset.png-336d46efecd52ddf1bba5c43748b951e.ctex"]
+source_file="res://Assets/Environment/end_port.png"
+dest_files=["res://.godot/imported/end_port.png-ee685cb4d15f3842f8839b4321535e0a.ctex"]
 
 [params]
 
