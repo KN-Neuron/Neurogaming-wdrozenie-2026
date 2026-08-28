@@ -18,14 +18,6 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 
 project/assembly_name="Neuroship"
 
-[dotnet]
-
-project/assembly_name="Neuroship"
-
-[dotnet]
-
-project/assembly_name="Neuroship"
-
 [editor]
 
 version_control/plugin_name="GitPlugin"
