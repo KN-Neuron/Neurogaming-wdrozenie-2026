@@ -232,7 +232,13 @@ func _get_structure_override_noise(chunk_center_tiles: Vector2, default_noise: f
 func _get_world_noise(global_x: float, global_y: float) -> float:
 	var current_point: Vector2 = Vector2(global_x, global_y)
 	var base_noise: float = _noise.get_noise_2d(global_x, global_y)
-	var inside_directional_cutoff := false
+	return _get_structure_or_river_noise(current_point, base_noise)
+
+# Applies structure influence when the point is within a structure's radius;
+# otherwise falls back to river carving, unless a directional structure's
+# back side suppresses it.
+func _get_structure_or_river_noise(current_point: Vector2, base_noise: float) -> float:
+	var inside_directional_cutoff: bool = false
 
 	# Apply terrain modifications from structures (always, regardless of river bounds)
 	for struct in _all_structures:
@@ -245,22 +251,27 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 		# Circular influence
 		if struct.influence_type == PlacedStructure.InfluenceType.CIRCLE:
 			if dist < struct.influence_radius_tiles:
-				var factor: float = 1.0 - (dist / struct.influence_radius_tiles)
-				return lerp(base_noise, struct.target_noise, factor)
+				return _blend_noise_toward_target(base_noise, struct.target_noise, dist, struct.influence_radius_tiles)
 
 		# Directional influence
 		elif struct.influence_type == PlacedStructure.InfluenceType.DIRECTIONAL:
 			var is_behind: bool = vector_to_structure.dot(struct.influence_direction.normalized()) > 0.0
 			if is_behind:
 				if dist < struct.influence_radius_tiles:
-					var factor: float = 1.0 - (dist / struct.influence_radius_tiles)
-					return lerp(base_noise, struct.target_noise, factor)
+					return _blend_noise_toward_target(base_noise, struct.target_noise, dist, struct.influence_radius_tiles)
 				inside_directional_cutoff = true
 
 	# Ignore river carving if standing behind a directional structure
 	if inside_directional_cutoff:
 		return base_noise
 
+	return _apply_river_carving(current_point, base_noise)
+
+func _blend_noise_toward_target(base_noise: float, target_noise: float, dist: float, influence_radius: float) -> float:
+	var factor: float = 1.0 - (dist / influence_radius)
+	return lerp(base_noise, target_noise, factor)
+
+func _apply_river_carving(current_point: Vector2, base_noise: float) -> float:
 	# Fast exit if point is far from the river
 	if not _river_bounds.has_point(current_point):
 		return base_noise
@@ -288,7 +299,7 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 		var mask_strength: float = actual_distance / path_width_tiles
 		var carved_noise: float = lerp(-1.0, base_noise, mask_strength)
 		return min(base_noise, carved_noise)
-		
+
 	return base_noise
 
 func _generate_river_curve() -> void:
