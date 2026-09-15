@@ -185,14 +185,7 @@ func generate_chunk_map() -> void:
 
 			var chunk_center_tiles: Vector2 = Vector2(center_tile_x, center_tile_y)
 			var macro_noise: float = _get_world_noise(center_tile_x, center_tile_y)
-
-			# Force biome if chunk is near any structure
-			for struct in _all_structures:
-				if struct.influence_type != PlacedStructure.InfluenceType.NONE:
-					var dist: float = chunk_center_tiles.distance_to(struct.tile_position)
-					if dist < (struct.influence_radius_tiles + tiles_per_chunk):
-						macro_noise = struct.target_noise
-						break
+			macro_noise = _get_structure_override_noise(chunk_center_tiles, macro_noise)
 
 			var chunk_instance: Node2D = null
 
@@ -215,7 +208,7 @@ func generate_chunk_map() -> void:
 
 			# Position and initialize chunk
 			chunk_instance.position = Vector2(x, y) * chunk_size_pixels
-			if chunk_instance.has_method("generate_terrain_from_noise"):
+			if chunk_instance is ChunkBaseTerrain:
 				chunk_instance.generate_terrain_from_noise(_get_world_noise, Vector2i(x, y))
 
 			add_child(chunk_instance)
@@ -224,6 +217,17 @@ func generate_chunk_map() -> void:
 			if chunks_since_yield >= CHUNKS_PER_FRAME:
 				chunks_since_yield = 0
 				await get_tree().process_frame
+
+func _get_structure_override_noise(chunk_center_tiles: Vector2, default_noise: float) -> float:
+	for struct in _all_structures:
+		if struct.influence_type == PlacedStructure.InfluenceType.NONE:
+			continue
+
+		var dist: float = chunk_center_tiles.distance_to(struct.tile_position)
+		if dist < (struct.influence_radius_tiles + tiles_per_chunk):
+			return struct.target_noise
+
+	return default_noise
 
 func _get_world_noise(global_x: float, global_y: float) -> float:
 	var current_point: Vector2 = Vector2(global_x, global_y)
