@@ -242,7 +242,7 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 		if struct.influence_type == PlacedStructure.InfluenceType.CIRCLE:
 			if dist < struct.influence_radius_tiles:
 				var factor = 1.0 - (dist / struct.influence_radius_tiles)
-				return lerp(base_noise, struct.target_noise, factor) # Używamy unikalnego szumu!
+				return lerp(base_noise, struct.target_noise, factor)
 
 		# Directional influence
 		elif struct.influence_type == PlacedStructure.InfluenceType.DIRECTIONAL:
@@ -250,7 +250,7 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 			if is_behind:
 				if dist < struct.influence_radius_tiles:
 					var factor = 1.0 - (dist / struct.influence_radius_tiles)
-					return lerp(base_noise, struct.target_noise, factor) # Używamy unikalnego szumu!
+					return lerp(base_noise, struct.target_noise, factor)
 				inside_directional_cutoff = true
 
 	# Ignore river carving if standing behind a directional structure
