@@ -2,3 +2,7 @@
 .godot/
 addons/
 /android/
+
+# Local-only test tooling (GUT addon + tests), not shared via the repo
+/.gutconfig.json
+/test/
