@@ -88,8 +88,7 @@ func _ready() -> void:
 
 	# Focus camera on start port
 	if is_debug_mode:
-		var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
-		$Camera2D.position = start_pos_tiles * tile_size
+		$Camera2D.position = start_pos_tiles * _get_tile_size()
 		$Camera2D.make_current()
 
 func _initialize_structures() -> void:
@@ -352,10 +351,13 @@ func _generate_river_curve() -> void:
 			
 	_river_bounds = _river_bounds.grow(path_width_tiles + 2.0)
 
+func _get_tile_size() -> float:
+	return chunk_size_pixels.x / float(tiles_per_chunk)
+
 func _spawn_structures() -> void:
 	# Instantiate structured objects onto the map
-	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
-	
+	var tile_size: float = _get_tile_size()
+
 	for struct in _all_structures:
 		if struct.scene:
 			var instance: Node2D = struct.scene.instantiate() as Node2D
@@ -391,7 +393,7 @@ func _spawn_player() -> void:
 		push_error("Player ship scene is not assigned")
 		return
 		
-	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
+	var tile_size: float = _get_tile_size()
 	var ship_instance: Node2D = player_ship_scene.instantiate() as Node2D
 
 	var target_distance_tiles: float = 15.0
