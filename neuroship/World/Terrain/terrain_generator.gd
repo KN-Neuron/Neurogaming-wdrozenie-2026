@@ -96,13 +96,13 @@ func _initialize_structures() -> void:
 	# Combine built-in ports and custom structures into a single array
 	_all_structures.clear()
 	
-	var total_path_vector = end_pos_tiles - start_pos_tiles
-	var main_path_dir = total_path_vector.normalized()
-	var land_cap_radius = path_width_tiles * port_land_cap_multiplier
-	
+	var total_path_vector: Vector2 = end_pos_tiles - start_pos_tiles
+	var main_path_dir: Vector2 = total_path_vector.normalized()
+	var land_cap_radius: float = path_width_tiles * port_land_cap_multiplier
+
 	# Auto-configure start port logic
 	if start_port_scene:
-		var start_struct = PlacedStructure.new()
+		var start_struct: PlacedStructure = PlacedStructure.new()
 		start_struct.structure_name = "Start Port"
 		start_struct.scene = start_port_scene
 		start_struct.tile_position = start_pos_tiles
@@ -114,7 +114,7 @@ func _initialize_structures() -> void:
 		
 	# Auto-configure end port logic
 	if end_port_scene:
-		var end_struct = PlacedStructure.new()
+		var end_struct: PlacedStructure = PlacedStructure.new()
 		end_struct.structure_name = "End Port"
 		end_struct.scene = end_port_scene
 		end_struct.tile_position = end_pos_tiles
@@ -132,33 +132,33 @@ func _initialize_structures() -> void:
 		if struct.placement_method == PlacedStructure.PlacementMethod.FIXED:
 			_all_structures.append(struct)
 		else:
-			var spawn_count = _rng.randi_range(struct.random_spawn_count_min, struct.random_spawn_count_max)
-			
-			var min_coord = path_margin_tiles
-			var max_x = (grid_width * tiles_per_chunk) - path_margin_tiles
-			var max_y = (grid_height * tiles_per_chunk) - path_margin_tiles
-			
+			var spawn_count: int = _rng.randi_range(struct.random_spawn_count_min, struct.random_spawn_count_max)
+
+			var min_coord: float = path_margin_tiles
+			var max_x: float = (grid_width * tiles_per_chunk) - path_margin_tiles
+			var max_y: float = (grid_height * tiles_per_chunk) - path_margin_tiles
+
 			for i in range(spawn_count):
-				var valid_spot_found = false
-				var attempts = 0
+				var valid_spot_found: bool = false
+				var attempts: int = 0
 				var random_x: float = 0.0
 				var random_y: float = 0.0
-				
+
 				while not valid_spot_found and attempts < max_valid_structure_spawn_attempts:
 					random_x = _rng.randf_range(min_coord, max_x)
 					random_y = _rng.randf_range(min_coord, max_y)
-					
+
 					if struct.restrict_spawn_by_noise:
-						var current_terrain_noise = _get_world_noise(random_x, random_y)
+						var current_terrain_noise: float = _get_world_noise(random_x, random_y)
 						if current_terrain_noise >= struct.allowed_noise_min and current_terrain_noise <= struct.allowed_noise_max:
 							valid_spot_found = true
 					else:
 						valid_spot_found = true
-						
+
 					attempts += 1
-					
+
 				if valid_spot_found:
-					var random_struct = struct.duplicate() 
+					var random_struct: PlacedStructure = struct.duplicate() as PlacedStructure
 					random_struct.tile_position = Vector2(random_x, random_y)
 					_all_structures.append(random_struct)
 				else:
@@ -180,16 +180,16 @@ func generate_chunk_map() -> void:
 
 	for x in range(grid_width):
 		for y in range(grid_height):
-			var center_tile_x = (x * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
-			var center_tile_y = (y * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
+			var center_tile_x: int = (x * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
+			var center_tile_y: int = (y * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
 
-			var chunk_center_tiles = Vector2(center_tile_x, center_tile_y)
+			var chunk_center_tiles: Vector2 = Vector2(center_tile_x, center_tile_y)
 			var macro_noise: float = _get_world_noise(center_tile_x, center_tile_y)
 
 			# Force biome if chunk is near any structure
 			for struct in _all_structures:
 				if struct.influence_type != PlacedStructure.InfluenceType.NONE:
-					var dist = chunk_center_tiles.distance_to(struct.tile_position)
+					var dist: float = chunk_center_tiles.distance_to(struct.tile_position)
 					if dist < (struct.influence_radius_tiles + tiles_per_chunk):
 						macro_noise = struct.target_noise
 						break
@@ -205,7 +205,7 @@ func generate_chunk_map() -> void:
 
 			# Failsafe: assign the highest threshold biome
 			if not chunk_instance:
-				var fallback_biome = biomes[biomes.size() - 1]
+				var fallback_biome: BiomeData = biomes[biomes.size() - 1]
 				if not fallback_biome.chunk_scenes.is_empty():
 					print("Warning: No biome found for noise value ", macro_noise, " at chunk (", x, ", ", y, "). Using default biome.")
 					chunk_instance = fallback_biome.chunk_scenes[_rng.randi_range(0, fallback_biome.chunk_scenes.size() - 1)].instantiate() as Node2D
@@ -226,8 +226,8 @@ func generate_chunk_map() -> void:
 				await get_tree().process_frame
 
 func _get_world_noise(global_x: float, global_y: float) -> float:
-	var current_point = Vector2(global_x, global_y)
-	var base_noise = _noise.get_noise_2d(global_x, global_y)
+	var current_point: Vector2 = Vector2(global_x, global_y)
+	var base_noise: float = _noise.get_noise_2d(global_x, global_y)
 	var inside_directional_cutoff := false
 
 	# Apply terrain modifications from structures (always, regardless of river bounds)
@@ -235,21 +235,21 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 		if struct.influence_type == PlacedStructure.InfluenceType.NONE:
 			continue
 
-		var vector_to_structure = current_point - struct.tile_position
-		var dist = vector_to_structure.length()
+		var vector_to_structure: Vector2 = current_point - struct.tile_position
+		var dist: float = vector_to_structure.length()
 
 		# Circular influence
 		if struct.influence_type == PlacedStructure.InfluenceType.CIRCLE:
 			if dist < struct.influence_radius_tiles:
-				var factor = 1.0 - (dist / struct.influence_radius_tiles)
+				var factor: float = 1.0 - (dist / struct.influence_radius_tiles)
 				return lerp(base_noise, struct.target_noise, factor)
 
 		# Directional influence
 		elif struct.influence_type == PlacedStructure.InfluenceType.DIRECTIONAL:
-			var is_behind = vector_to_structure.dot(struct.influence_direction.normalized()) > 0.0
+			var is_behind: bool = vector_to_structure.dot(struct.influence_direction.normalized()) > 0.0
 			if is_behind:
 				if dist < struct.influence_radius_tiles:
-					var factor = 1.0 - (dist / struct.influence_radius_tiles)
+					var factor: float = 1.0 - (dist / struct.influence_radius_tiles)
 					return lerp(base_noise, struct.target_noise, factor)
 				inside_directional_cutoff = true
 
@@ -262,58 +262,58 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 		return base_noise
 
 	# Find distance to the closest river segment
-	var min_distance_sq = INF
-	var path_width_sq = path_width_tiles * path_width_tiles
-	var is_near_any_segment = false
-	
+	var min_distance_sq: float = INF
+	var path_width_sq: float = path_width_tiles * path_width_tiles
+	var is_near_any_segment: bool = false
+
 	# Segment optimization check
 	for i in range(_segment_bounds.size()):
 		if _segment_bounds[i].has_point(current_point):
 			is_near_any_segment = true
-			var p1 = _baked_river_path[i]
-			var p2 = _baked_river_path[i+1]
-			var closest_pt = Geometry2D.get_closest_point_to_segment(current_point, p1, p2)
-			
-			var dist_sq = current_point.distance_squared_to(closest_pt)
+			var p1: Vector2 = _baked_river_path[i]
+			var p2: Vector2 = _baked_river_path[i+1]
+			var closest_pt: Vector2 = Geometry2D.get_closest_point_to_segment(current_point, p1, p2)
+
+			var dist_sq: float = current_point.distance_squared_to(closest_pt)
 			if dist_sq < min_distance_sq:
 				min_distance_sq = dist_sq
-	
+
 	# Carve river into the terrain
 	if is_near_any_segment and min_distance_sq < path_width_sq:
-		var actual_distance = sqrt(min_distance_sq)
-		var mask_strength = actual_distance / path_width_tiles 
-		var carved_noise = lerp(-1.0, base_noise, mask_strength) 
+		var actual_distance: float = sqrt(min_distance_sq)
+		var mask_strength: float = actual_distance / path_width_tiles
+		var carved_noise: float = lerp(-1.0, base_noise, mask_strength)
 		return min(base_noise, carved_noise)
 		
 	return base_noise
 
 func _generate_river_curve() -> void:
 	# Create an S-shaped path between start and end
-	var curve = Curve2D.new()
-	
-	var path_vector = end_pos_tiles - start_pos_tiles
-	var path_length = path_vector.length()
-	var path_dir = path_vector.normalized()
-	var path_normal = Vector2(-path_dir.y, path_dir.x)
-	
-	var handle_len = path_length * path_length_multiplier_for_deviation 
-	
+	var curve: Curve2D = Curve2D.new()
+
+	var path_vector: Vector2 = end_pos_tiles - start_pos_tiles
+	var path_length: float = path_vector.length()
+	var path_dir: Vector2 = path_vector.normalized()
+	var path_normal: Vector2 = Vector2(-path_dir.y, path_dir.x)
+
+	var handle_len: float = path_length * path_length_multiplier_for_deviation
+
 	# Randomize curve control points
-	var midpoint_first = _rng.randf_range(max_path_deviation * 0.5, max_path_deviation)
+	var midpoint_first: float = _rng.randf_range(max_path_deviation * 0.5, max_path_deviation)
 	if _rng.randi() % 2 == 0:
 		midpoint_first = -midpoint_first
 
-	var midpoint_second = _rng.randf_range(max_path_deviation * 0.5, max_path_deviation)
-	if midpoint_first > 0: 
+	var midpoint_second: float = _rng.randf_range(max_path_deviation * 0.5, max_path_deviation)
+	if midpoint_first > 0:
 		midpoint_second = -midpoint_second
-	
+
 	# Plot points
 	curve.add_point(start_pos_tiles)
-	
-	var point_one = start_pos_tiles + (path_vector * river_curve_point_one_ratio)
+
+	var point_one: Vector2 = start_pos_tiles + (path_vector * river_curve_point_one_ratio)
 	curve.add_point(point_one + (path_normal * midpoint_first), -path_dir * handle_len, path_dir * handle_len)
-	
-	var point_two = start_pos_tiles + (path_vector * river_curve_point_two_ratio)
+
+	var point_two: Vector2 = start_pos_tiles + (path_vector * river_curve_point_two_ratio)
 	curve.add_point(point_two + (path_normal * midpoint_second), -path_dir * handle_len, path_dir * handle_len)
 	
 	curve.add_point(end_pos_tiles)
@@ -327,12 +327,12 @@ func _generate_river_curve() -> void:
 	_segment_bounds.clear()
 	
 	for i in range(_baked_river_path.size()):
-		var p = _baked_river_path[i]
+		var p: Vector2 = _baked_river_path[i]
 		_river_bounds = _river_bounds.expand(p)
-		
+
 		if i < _baked_river_path.size() - 1:
-			var p_next = _baked_river_path[i+1]
-			var seg_rect = Rect2(p, Vector2.ZERO).expand(p_next)
+			var p_next: Vector2 = _baked_river_path[i+1]
+			var seg_rect: Rect2 = Rect2(p, Vector2.ZERO).expand(p_next)
 			_segment_bounds.append(seg_rect.grow(path_width_tiles + 2.0))
 			
 	_river_bounds = _river_bounds.grow(path_width_tiles + 2.0)
@@ -343,18 +343,18 @@ func _spawn_structures() -> void:
 	
 	for struct in _all_structures:
 		if struct.scene:
-			var instance = struct.scene.instantiate() as Node2D
+			var instance: Node2D = struct.scene.instantiate() as Node2D
 			instance.position = struct.tile_position * tile_size
 			add_child(instance)
 
 func _randomize_ports() -> void:
 	# Keep looking for random positions until minimum distance is met
-	var max_x = (grid_width * tiles_per_chunk) - path_margin_tiles
-	var max_y = (grid_height * tiles_per_chunk) - path_margin_tiles
-	var min_coord = path_margin_tiles
-	
-	var valid_positions = false
-	var attempts = 0
+	var max_x: float = (grid_width * tiles_per_chunk) - path_margin_tiles
+	var max_y: float = (grid_height * tiles_per_chunk) - path_margin_tiles
+	var min_coord: float = path_margin_tiles
+
+	var valid_positions: bool = false
+	var attempts: int = 0
 	
 	while not valid_positions and attempts < max_random_path_attempts:
 		start_pos_tiles = Vector2(_rng.randf_range(min_coord, max_x), _rng.randf_range(min_coord, max_y))
@@ -377,15 +377,15 @@ func _spawn_player() -> void:
 		return
 		
 	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
-	var ship_instance = player_ship_scene.instantiate() as Node2D
-	
-	var target_distance_tiles = 15.0
-	var spawn_tile = start_pos_tiles
-	var forward_dir = Vector2.UP 
-	
+	var ship_instance: Node2D = player_ship_scene.instantiate() as Node2D
+
+	var target_distance_tiles: float = 15.0
+	var spawn_tile: Vector2 = start_pos_tiles
+	var forward_dir: Vector2 = Vector2.UP
+
 	if _baked_river_path.size() > 1:
 		for i in range(1, _baked_river_path.size()):
-			var current_pt = _baked_river_path[i]
+			var current_pt: Vector2 = _baked_river_path[i]
 			
 			if start_pos_tiles.distance_to(current_pt) >= target_distance_tiles:
 				spawn_tile = current_pt

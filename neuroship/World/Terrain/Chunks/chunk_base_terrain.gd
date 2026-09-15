@@ -23,8 +23,8 @@ func generate_terrain_from_noise(noise_function: Callable, chunk_grid_pos: Vecto
 
 	for x in range(chunk_width):
 		for y in range(chunk_height):
-			var global_x = (chunk_grid_pos.x * chunk_width) + x
-			var global_y = (chunk_grid_pos.y * chunk_height) + y
+			var global_x: int = (chunk_grid_pos.x * chunk_width) + x
+			var global_y: int = (chunk_grid_pos.y * chunk_height) + y
 
 			var noise_value: float = noise_function.call(global_x, global_y)
 			
