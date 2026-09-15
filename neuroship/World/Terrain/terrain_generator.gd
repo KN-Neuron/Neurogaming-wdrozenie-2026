@@ -1,7 +1,7 @@
 extends Node2D
 
 @export_group("Debug")
-@export var debug_mode: bool = false
+@export var is_debug_mode: bool = false
 
 @export_group("Player")
 @export var player_ship_scene: PackedScene
@@ -15,7 +15,7 @@ extends Node2D
 @export var max_valid_structure_spawn_attempts: int = 50
 
 @export_group("Path")
-@export var randomize_path: bool = true
+@export var should_randomize_path: bool = true
 @export var min_path_length_tiles: float = 400.0
 @export var path_margin_tiles: float = 50.0
 @export var path_length_multiplier_for_deviation: float = 0.25
@@ -46,18 +46,18 @@ var _rng: RandomNumberGenerator
 @export var biomes: Array[BiomeData]
 
 @export_group("World Generation")
-@export var use_random_seed: bool = true
+@export var should_use_random_seed: bool = true
 @export var world_seed: int = 0
 @export var noise_frequency: float = 0.05
 
 func _ready() -> void:
 	# Cleanup debug tools if not needed
-	if not debug_mode:
+	if not is_debug_mode:
 		$Camera2D.queue_free()
 
 	# Init random seed
 	_rng = RandomNumberGenerator.new()
-	if use_random_seed:
+	if should_use_random_seed:
 		_rng.randomize()
 		world_seed = _rng.seed
 	else:
@@ -72,7 +72,7 @@ func _ready() -> void:
 	_noise.frequency = noise_frequency
 
 	# Execute world generation pipeline
-	if randomize_path:
+	if should_randomize_path:
 		_randomize_ports()
 
 	_generate_river_curve()
@@ -87,7 +87,7 @@ func _ready() -> void:
 	_spawn_player()
 
 	# Focus camera on start port
-	if debug_mode:
+	if is_debug_mode:
 		var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)
 		$Camera2D.position = start_pos_tiles * tile_size
 		$Camera2D.make_current()
@@ -148,7 +148,7 @@ func _initialize_structures() -> void:
 					random_x = _rng.randf_range(min_coord, max_x)
 					random_y = _rng.randf_range(min_coord, max_y)
 
-					if struct.restrict_spawn_by_noise:
+					if struct.should_restrict_spawn_by_noise:
 						var current_terrain_noise: float = _get_world_noise(random_x, random_y)
 						if current_terrain_noise >= struct.allowed_noise_min and current_terrain_noise <= struct.allowed_noise_max:
 							valid_spot_found = true

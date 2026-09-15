@@ -19,7 +19,7 @@ scene = ExtResource("5_2oe32")
 placement_method = 1
 random_spawn_count_min = 10
 random_spawn_count_max = 20
-restrict_spawn_by_noise = true
+should_restrict_spawn_by_noise = true
 allowed_noise_max = 0.35
 influence_radius_tiles = 15.0
 target_noise = -1.0
@@ -27,6 +27,7 @@ metadata/_custom_type_script = "uid://deumldnpu7j3s"
 
 [node name="TerrainGenerator" type="Node2D" unique_id=1720604078]
 script = ExtResource("1_yh308")
+is_debug_mode = true
 player_ship_scene = ExtResource("2_2oe32")
 start_port_scene = ExtResource("2_6vbfo")
 end_port_scene = ExtResource("3_cgc3n")

@@ -14,7 +14,7 @@ enum PlacementMethod { FIXED, RANDOM }
 @export var random_spawn_count_max: int = 3
 
 @export_group("Spawn Conditions")
-@export var restrict_spawn_by_noise: bool = false
+@export var should_restrict_spawn_by_noise: bool = false
 @export var allowed_noise_min: float = -1.0
 @export var allowed_noise_max: float = 1.0
 
