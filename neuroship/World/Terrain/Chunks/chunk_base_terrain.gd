@@ -8,6 +8,8 @@ extends Node2D
 @export var atlas_source_id: int = 0
 @export var tile_rules: Array[TerrainRule] = []
 
+var _tile_rules_sorted: bool = false
+
 func generate_terrain_from_noise(noise_function: Callable, chunk_grid_pos: Vector2i) -> void:
 	if not terrain_tile_map_layer:
 		printerr("No TileMapLayer assigned. Cannot generate terrain.")
@@ -15,9 +17,10 @@ func generate_terrain_from_noise(noise_function: Callable, chunk_grid_pos: Vecto
 
 	terrain_tile_map_layer.clear()
 
-	if not tile_rules.is_empty():
+	if not _tile_rules_sorted and not tile_rules.is_empty():
 		tile_rules.sort_custom(func(a, b): return a.upper_threshold < b.upper_threshold)
-	
+		_tile_rules_sorted = true
+
 	for x in range(chunk_width):
 		for y in range(chunk_height):
 			var global_x = (chunk_grid_pos.x * chunk_width) + x

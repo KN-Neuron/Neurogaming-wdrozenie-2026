@@ -34,6 +34,7 @@ var _river_bounds: Rect2
 var _segment_bounds: Array[Rect2]
 var _all_structures: Array[PlacedStructure] = []
 var _noise: FastNoiseLite
+var _rng: RandomNumberGenerator
 
 @export_group("Chunk Generation")
 @export var chunk_size_pixels: Vector2 = Vector2(512, 512)
@@ -55,10 +56,13 @@ func _ready() -> void:
 		$Camera2D.queue_free()
 
 	# Init random seed
+	_rng = RandomNumberGenerator.new()
 	if use_random_seed:
-		randomize()
-		world_seed = randi()
-	
+		_rng.randomize()
+		world_seed = _rng.seed
+	else:
+		_rng.seed = world_seed
+
 	print("Generated world seed: ", world_seed)
 
 	# Setup simplex noise
@@ -77,7 +81,7 @@ func _ready() -> void:
 	# Sort biomes for waterfall logic
 	biomes.sort_custom(func(a, b): return a.upper_threshold < b.upper_threshold)
 
-	generate_chunk_map()
+	await generate_chunk_map()
 	_spawn_structures()
 
 	_spawn_player()
@@ -128,7 +132,7 @@ func _initialize_structures() -> void:
 		if struct.placement_method == PlacedStructure.PlacementMethod.FIXED:
 			_all_structures.append(struct)
 		else:
-			var spawn_count = randi_range(struct.random_spawn_count_min, struct.random_spawn_count_max)
+			var spawn_count = _rng.randi_range(struct.random_spawn_count_min, struct.random_spawn_count_max)
 			
 			var min_coord = path_margin_tiles
 			var max_x = (grid_width * tiles_per_chunk) - path_margin_tiles
@@ -141,8 +145,8 @@ func _initialize_structures() -> void:
 				var random_y: float = 0.0
 				
 				while not valid_spot_found and attempts < max_valid_structure_spawn_attempts:
-					random_x = randf_range(min_coord, max_x)
-					random_y = randf_range(min_coord, max_y)
+					random_x = _rng.randf_range(min_coord, max_x)
+					random_y = _rng.randf_range(min_coord, max_y)
 					
 					if struct.restrict_spawn_by_noise:
 						var current_terrain_noise = _get_world_noise(random_x, random_y)
@@ -169,16 +173,19 @@ func generate_chunk_map() -> void:
 	if biomes.is_empty():
 		printerr("No biomes provided. Cannot generate terrain.")
 		return
-	
+
 	# Generate grid
+	const CHUNKS_PER_FRAME := 50
+	var chunks_since_yield := 0
+
 	for x in range(grid_width):
 		for y in range(grid_height):
 			var center_tile_x = (x * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
 			var center_tile_y = (y * tiles_per_chunk) + int(tiles_per_chunk / 2.0)
-			
+
 			var chunk_center_tiles = Vector2(center_tile_x, center_tile_y)
 			var macro_noise: float = _get_world_noise(center_tile_x, center_tile_y)
-			
+
 			# Force biome if chunk is near any structure
 			for struct in _all_structures:
 				if struct.influence_type != PlacedStructure.InfluenceType.NONE:
@@ -186,52 +193,57 @@ func generate_chunk_map() -> void:
 					if dist < (struct.influence_radius_tiles + tiles_per_chunk):
 						macro_noise = struct.target_noise
 						break
-			
+
 			var chunk_instance: Node2D = null
-			
+
 			# Waterfall biome selection
 			for biome in biomes:
 				if macro_noise <= biome.upper_threshold:
 					if not biome.chunk_scenes.is_empty():
-						chunk_instance = biome.chunk_scenes.pick_random().instantiate() as Node2D
+						chunk_instance = biome.chunk_scenes[_rng.randi_range(0, biome.chunk_scenes.size() - 1)].instantiate() as Node2D
 					break
-			
+
 			# Failsafe: assign the highest threshold biome
 			if not chunk_instance:
-				print("Warning: No biome found for noise value ", macro_noise, " at chunk (", x, ", ", y, "). Using default biome.")
-				chunk_instance = biomes[biomes.size() - 1].chunk_scenes.pick_random().instantiate() as Node2D
-			
+				var fallback_biome = biomes[biomes.size() - 1]
+				if not fallback_biome.chunk_scenes.is_empty():
+					print("Warning: No biome found for noise value ", macro_noise, " at chunk (", x, ", ", y, "). Using default biome.")
+					chunk_instance = fallback_biome.chunk_scenes[_rng.randi_range(0, fallback_biome.chunk_scenes.size() - 1)].instantiate() as Node2D
+				else:
+					printerr("Fallback biome '", fallback_biome.biome_name, "' has no chunk_scenes. Skipping chunk (", x, ", ", y, ").")
+					continue
+
 			# Position and initialize chunk
 			chunk_instance.position = Vector2(x, y) * chunk_size_pixels
 			if chunk_instance.has_method("generate_terrain_from_noise"):
 				chunk_instance.generate_terrain_from_noise(_get_world_noise, Vector2i(x, y))
-				
+
 			add_child(chunk_instance)
+
+			chunks_since_yield += 1
+			if chunks_since_yield >= CHUNKS_PER_FRAME:
+				chunks_since_yield = 0
+				await get_tree().process_frame
 
 func _get_world_noise(global_x: float, global_y: float) -> float:
 	var current_point = Vector2(global_x, global_y)
-	
-	# Fast exit if point is far from the river
-	if not _river_bounds.has_point(current_point):
-		return _noise.get_noise_2d(global_x, global_y)
-	
 	var base_noise = _noise.get_noise_2d(global_x, global_y)
 	var inside_directional_cutoff := false
-	
-	# Apply terrain modifications from structures
+
+	# Apply terrain modifications from structures (always, regardless of river bounds)
 	for struct in _all_structures:
 		if struct.influence_type == PlacedStructure.InfluenceType.NONE:
 			continue
-			
+
 		var vector_to_structure = current_point - struct.tile_position
 		var dist = vector_to_structure.length()
-		
+
 		# Circular influence
 		if struct.influence_type == PlacedStructure.InfluenceType.CIRCLE:
 			if dist < struct.influence_radius_tiles:
 				var factor = 1.0 - (dist / struct.influence_radius_tiles)
 				return lerp(base_noise, struct.target_noise, factor) # Używamy unikalnego szumu!
-				
+
 		# Directional influence
 		elif struct.influence_type == PlacedStructure.InfluenceType.DIRECTIONAL:
 			var is_behind = vector_to_structure.dot(struct.influence_direction.normalized()) > 0.0
@@ -240,11 +252,15 @@ func _get_world_noise(global_x: float, global_y: float) -> float:
 					var factor = 1.0 - (dist / struct.influence_radius_tiles)
 					return lerp(base_noise, struct.target_noise, factor) # Używamy unikalnego szumu!
 				inside_directional_cutoff = true
-				
+
 	# Ignore river carving if standing behind a directional structure
 	if inside_directional_cutoff:
 		return base_noise
-		
+
+	# Fast exit if point is far from the river
+	if not _river_bounds.has_point(current_point):
+		return base_noise
+
 	# Find distance to the closest river segment
 	var min_distance_sq = INF
 	var path_width_sq = path_width_tiles * path_width_tiles
@@ -283,11 +299,11 @@ func _generate_river_curve() -> void:
 	var handle_len = path_length * path_length_multiplier_for_deviation 
 	
 	# Randomize curve control points
-	var midpoint_first = randf_range(max_path_deviation * 0.5, max_path_deviation)
-	if randi() % 2 == 0: 
+	var midpoint_first = _rng.randf_range(max_path_deviation * 0.5, max_path_deviation)
+	if _rng.randi() % 2 == 0:
 		midpoint_first = -midpoint_first
-	
-	var midpoint_second = randf_range(max_path_deviation * 0.5, max_path_deviation)
+
+	var midpoint_second = _rng.randf_range(max_path_deviation * 0.5, max_path_deviation)
 	if midpoint_first > 0: 
 		midpoint_second = -midpoint_second
 	
@@ -341,8 +357,8 @@ func _randomize_ports() -> void:
 	var attempts = 0
 	
 	while not valid_positions and attempts < max_random_path_attempts:
-		start_pos_tiles = Vector2(randf_range(min_coord, max_x), randf_range(min_coord, max_y))
-		end_pos_tiles = Vector2(randf_range(min_coord, max_x), randf_range(min_coord, max_y))
+		start_pos_tiles = Vector2(_rng.randf_range(min_coord, max_x), _rng.randf_range(min_coord, max_y))
+		end_pos_tiles = Vector2(_rng.randf_range(min_coord, max_x), _rng.randf_range(min_coord, max_y))
 		
 		if start_pos_tiles.distance_to(end_pos_tiles) >= min_path_length_tiles:
 			valid_positions = true
