@@ -162,7 +162,7 @@ func _initialize_structures() -> void:
 					random_struct.tile_position = Vector2(random_x, random_y)
 					_all_structures.append(random_struct)
 				else:
-					print("Warning: Could not find valid spawn for ", struct.structure_name, " after 50 attempts.")
+					push_warning("Could not find valid spawn for ", struct.structure_name, " after ", max_valid_structure_spawn_attempts, " attempts.")
 
 func generate_chunk_map() -> void:
 	# Clear old chunks before generating new ones
@@ -171,7 +171,7 @@ func generate_chunk_map() -> void:
 			child.queue_free()
 
 	if biomes.is_empty():
-		printerr("No biomes provided. Cannot generate terrain.")
+		push_error("No biomes provided. Cannot generate terrain.")
 		return
 
 	# Generate grid
@@ -207,10 +207,10 @@ func generate_chunk_map() -> void:
 			if not chunk_instance:
 				var fallback_biome: BiomeData = biomes[biomes.size() - 1]
 				if not fallback_biome.chunk_scenes.is_empty():
-					print("Warning: No biome found for noise value ", macro_noise, " at chunk (", x, ", ", y, "). Using default biome.")
+					push_warning("No biome found for noise value ", macro_noise, " at chunk (", x, ", ", y, "). Using default biome.")
 					chunk_instance = fallback_biome.chunk_scenes[_rng.randi_range(0, fallback_biome.chunk_scenes.size() - 1)].instantiate() as Node2D
 				else:
-					printerr("Fallback biome '", fallback_biome.biome_name, "' has no chunk_scenes. Skipping chunk (", x, ", ", y, ").")
+					push_error("Fallback biome '", fallback_biome.biome_name, "' has no chunk_scenes. Skipping chunk (", x, ", ", y, ").")
 					continue
 
 			# Position and initialize chunk
@@ -369,11 +369,11 @@ func _randomize_ports() -> void:
 	if not valid_positions:
 		start_pos_tiles = Vector2(min_coord, min_coord)
 		end_pos_tiles = Vector2(max_x, max_y)
-		print("Warning: Map too small for min_path_length. Forcing corners.")
+		push_warning("Map too small for min_path_length. Forcing corners.")
 
 func _spawn_player() -> void:
 	if not player_ship_scene:
-		printerr("Player ship scene is not assigned")
+		push_error("Player ship scene is not assigned")
 		return
 		
 	var tile_size: float = chunk_size_pixels.x / float(tiles_per_chunk)

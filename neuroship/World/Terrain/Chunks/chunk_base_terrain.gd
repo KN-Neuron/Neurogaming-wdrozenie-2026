@@ -12,7 +12,7 @@ var _tile_rules_sorted: bool = false
 
 func generate_terrain_from_noise(noise_function: Callable, chunk_grid_pos: Vector2i) -> void:
 	if not terrain_tile_map_layer:
-		printerr("No TileMapLayer assigned. Cannot generate terrain.")
+		push_error("No TileMapLayer assigned. Cannot generate terrain.")
 		return
 
 	terrain_tile_map_layer.clear()
